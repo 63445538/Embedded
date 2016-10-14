@@ -2,7 +2,7 @@
 #define __24cxx_driver_H__
 
 #include "24cxx_config.h"
-#include "BSP_TOP.h"              
+#include "bsplib.h"              
 
 #define AT24C01     127
 #define AT24C02     255

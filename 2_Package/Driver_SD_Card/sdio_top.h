@@ -2,7 +2,7 @@
 #define __sdio_lib_H__
 
 #include "sdio_config.h"
-#include "BSP_TOP.h"
+#include "bsplib.h"
 
 #if Hardware_Platform == 1    //STM32 F1xx
 #include "sdio_driver_f1.h"

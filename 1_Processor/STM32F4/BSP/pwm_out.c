@@ -31,6 +31,26 @@ extern "C" {
 
 #include "pwm_out.h"
 
+typedef struct PWM_Out_Data{
+    uint16_t TIM1_PWM_Period;
+    uint16_t TIM8_PWM_Period;
+    uint16_t TIM9_PWM_Period;
+    uint16_t TIM12_PWM_Period;
+
+    uint16_t TIM1_PWM1;
+    uint16_t TIM1_PWM2;
+    uint16_t TIM1_PWM3;
+    uint16_t TIM1_PWM4;
+    uint16_t TIM8_PWM1;
+    uint16_t TIM8_PWM2;
+    uint16_t TIM8_PWM3;
+    uint16_t TIM8_PWM4;
+    uint16_t TIM9_PWM1;
+    uint16_t TIM9_PWM2;
+    uint16_t TIM12_PWM1;
+    uint16_t TIM12_PWM2;
+}PWM_Out_Data;
+
 PWM_Out_Data pwm_out_data_r;
 
 /***********************************************************************************************************************
@@ -48,8 +68,8 @@ PWM_Out_Data pwm_out_data_r;
 *
 * History:
 ***********************************************************************************************************************/
-void HF_PwmOut_Init(TIM_TypeDef* TIMx , unsigned short int Prescaler
-                    , unsigned short int Period , unsigned char GPIO_AF)
+void HF_PWMOut_Init(TIM_TypeDef* TIMx , uint16_t Prescaler
+                    , uint16_t Period , uint8_t GPIO_AF)
 {
     
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -93,7 +113,7 @@ void HF_PwmOut_Init(TIM_TypeDef* TIMx , unsigned short int Prescaler
     {
         pwm_out_data_r.TIM8_PWM_Period = Period;
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE);
-        
+
         if( GPIO_AF == 0 )
         {
             RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
@@ -105,10 +125,20 @@ void HF_PwmOut_Init(TIM_TypeDef* TIMx , unsigned short int Prescaler
             GPIO_PinAFConfig(GPIOC, GPIO_PinSource8, GPIO_AF_TIM8);
             GPIO_PinAFConfig(GPIOC, GPIO_PinSource9, GPIO_AF_TIM8);
         }
-        else if( GPIO_AF == 1 )
+    }
+    else if(TIMx == TIM9)
+    {
+        pwm_out_data_r.TIM9_PWM_Period = Period;
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9,ENABLE);
+
+        if( GPIO_AF == 0 )
         {
-            
-            
+            RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+            GPIO_InitStructure.GPIO_Pin =   GPIO_Pin_5 |GPIO_Pin_6;
+            GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+            GPIO_PinAFConfig(GPIOE, GPIO_PinSource5, GPIO_AF_TIM9);
+            GPIO_PinAFConfig(GPIOE, GPIO_PinSource6, GPIO_AF_TIM9);
         }
     }
     else if(TIMx == TIM12)
@@ -124,11 +154,6 @@ void HF_PwmOut_Init(TIM_TypeDef* TIMx , unsigned short int Prescaler
             
             GPIO_PinAFConfig(GPIOB, GPIO_PinSource14, GPIO_AF_TIM12);
             GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_TIM12);
-        }
-        else if( GPIO_AF == 1 )
-        {
-            
-            
         }
     }
     TIM_TimeBaseStructure.TIM_Prescaler = Prescaler;    //Prescaler
@@ -160,7 +185,7 @@ void HF_PwmOut_Init(TIM_TypeDef* TIMx , unsigned short int Prescaler
 }
 
 /***********************************************************************************************************************
-* Function:      Pwm_Set_TIMx_CCRx(unsigned short int Pwm_Value)
+* Function:      HF_PWM_Set_TIMx_CCRx(uint16_t Pwm_Value)
 *
 * Scope:         public
 *
@@ -175,79 +200,95 @@ void HF_PwmOut_Init(TIM_TypeDef* TIMx , unsigned short int Prescaler
 * History:
 ***********************************************************************************************************************/
 //set Pulse Width of TIM1
-void Pwm_Set_TIM1_CCR1(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM1_CCR1(uint16_t Pwm_Value)
 {
-    if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
+    if( Pwm_Value <= 0 ) Pwm_Value = 0;
     if( Pwm_Value >= pwm_out_data_r.TIM1_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM1_PWM_Period;
     TIM_SetCompare1(TIM1,Pwm_Value);
-    pwm_out_data_r.TIM1_PWM1 = Pwm_Value ;
+    pwm_out_data_r.TIM1_PWM1 = Pwm_Value;
 }
-void Pwm_Set_TIM1_CCR2(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM1_CCR2(uint16_t Pwm_Value)
 {
-    if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
+    if( Pwm_Value <= 0 ) Pwm_Value = 0;
     if( Pwm_Value >= pwm_out_data_r.TIM1_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM1_PWM_Period;
     TIM_SetCompare2(TIM1,Pwm_Value);
-    pwm_out_data_r.TIM1_PWM2 = Pwm_Value ;
+    pwm_out_data_r.TIM1_PWM2 = Pwm_Value;
 }
-void Pwm_Set_TIM1_CCR3(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM1_CCR3(uint16_t Pwm_Value)
 {
     if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
     if( Pwm_Value >= pwm_out_data_r.TIM1_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM1_PWM_Period;
     TIM_SetCompare3(TIM1,Pwm_Value);
-    pwm_out_data_r.TIM1_PWM3 = Pwm_Value ;
+    pwm_out_data_r.TIM1_PWM3 = Pwm_Value;
 }
-void Pwm_Set_TIM1_CCR4(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM1_CCR4(uint16_t Pwm_Value)
 {
     if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
     if( Pwm_Value >= pwm_out_data_r.TIM1_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM1_PWM_Period;
     TIM_SetCompare4(TIM1,Pwm_Value);
-    pwm_out_data_r.TIM1_PWM4 = Pwm_Value ;
+    pwm_out_data_r.TIM1_PWM4 = Pwm_Value;
 }
 
 //set Pulse Width of TIM8
-void Pwm_Set_TIM8_CCR1(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM8_CCR1(uint16_t Pwm_Value)
 {
-    if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
+    if( Pwm_Value <= 0 ) Pwm_Value = 0;
     if( Pwm_Value >= pwm_out_data_r.TIM8_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM8_PWM_Period;
     TIM_SetCompare1(TIM8,Pwm_Value);
-    pwm_out_data_r.TIM8_PWM1 = Pwm_Value ;
+    pwm_out_data_r.TIM8_PWM1 = Pwm_Value;
 }
-void Pwm_Set_TIM8_CCR2(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM8_CCR2(uint16_t Pwm_Value)
 {
-    if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
+    if( Pwm_Value <= 0 ) Pwm_Value = 0;
     if( Pwm_Value >= pwm_out_data_r.TIM8_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM8_PWM_Period;
     TIM_SetCompare2(TIM8,Pwm_Value);
-    pwm_out_data_r.TIM8_PWM2 = Pwm_Value ;
+    pwm_out_data_r.TIM8_PWM2 = Pwm_Value;
 }
-void Pwm_Set_TIM8_CCR3(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM8_CCR3(uint16_t Pwm_Value)
 {
-    if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
+    if( Pwm_Value <= 0 ) Pwm_Value = 0;
     if( Pwm_Value >= pwm_out_data_r.TIM8_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM8_PWM_Period;
     TIM_SetCompare3(TIM8,Pwm_Value);
-    pwm_out_data_r.TIM8_PWM3 = Pwm_Value ;
+    pwm_out_data_r.TIM8_PWM3 = Pwm_Value;
 }
-void Pwm_Set_TIM8_CCR4(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM8_CCR4(uint16_t Pwm_Value)
 {
-    if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
+    if( Pwm_Value <= 0 ) Pwm_Value = 0;
     if( Pwm_Value >= pwm_out_data_r.TIM8_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM8_PWM_Period;
     TIM_SetCompare4(TIM8,Pwm_Value);
-    pwm_out_data_r.TIM8_PWM4 = Pwm_Value ;
+    pwm_out_data_r.TIM8_PWM4 = Pwm_Value;
+}
+
+//set Pulse Width of TIM9
+void HF_PWM_Set_TIM9_CCR1(uint16_t Pwm_Value)
+{
+    if( Pwm_Value <= 0 ) Pwm_Value = 0;
+    if( Pwm_Value >= pwm_out_data_r.TIM9_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM9_PWM_Period;
+    TIM_SetCompare1(TIM9,Pwm_Value);
+    pwm_out_data_r.TIM9_PWM1 = Pwm_Value;
+}
+void HF_PWM_Set_TIM9_CCR2(uint16_t Pwm_Value)
+{
+    if( Pwm_Value <= 0 ) Pwm_Value = 0;
+    if( Pwm_Value >= pwm_out_data_r.TIM9_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM9_PWM_Period;
+    TIM_SetCompare2(TIM9,Pwm_Value);
+    pwm_out_data_r.TIM9_PWM2 = Pwm_Value;
 }
 
 //set Pulse Width of TIM12
-void Pwm_Set_TIM12_CCR1(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM12_CCR1(uint16_t Pwm_Value)
 {
     if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
     if( Pwm_Value >= pwm_out_data_r.TIM12_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM12_PWM_Period;
     TIM_SetCompare1(TIM12,Pwm_Value);
-    pwm_out_data_r.TIM12_PWM1 = Pwm_Value ;
+    pwm_out_data_r.TIM12_PWM1 = Pwm_Value;
 }
-void Pwm_Set_TIM12_CCR2(unsigned short int Pwm_Value)
+void HF_PWM_Set_TIM12_CCR2(uint16_t Pwm_Value)
 {
     if( Pwm_Value <= 0 ) Pwm_Value = 0 ;
     if( Pwm_Value >= pwm_out_data_r.TIM12_PWM_Period  ) Pwm_Value = pwm_out_data_r.TIM12_PWM_Period;
     TIM_SetCompare2(TIM12,Pwm_Value);
-    pwm_out_data_r.TIM12_PWM2 = Pwm_Value ;
+    pwm_out_data_r.TIM12_PWM2 = Pwm_Value;
 }
 
 #ifdef __cplusplus

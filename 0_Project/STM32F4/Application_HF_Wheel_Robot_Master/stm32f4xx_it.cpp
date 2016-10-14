@@ -68,7 +68,7 @@ void USART3_IRQHandler(void)
     if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
     {
         data=USART_ReceiveData(USART3);
-        hf_head.gbpRxInterruptBuffer[(hf_head.gbRxBufferWritePointer++)] = data;
+        robot_head.gbpRxInterruptBuffer[(robot_head.gbRxBufferWritePointer++)] = data;
         USART_ClearITPendingBit(USART3,USART_IT_RXNE);  //clear interrupt flag
     }
 #if SYSTEM_SUPPORT_OS == 1
@@ -84,12 +84,12 @@ void TIM6_DAC_IRQHandler(void)
 #endif
     if(TIM_GetITStatus(TIM6 , TIM_IT_Update)== SET  )
     {
-        system_data.cnt_1ms++;
-        system_data.cnt_2ms++;
-        system_data.cnt_5ms++;
-        system_data.cnt_10ms++;
-        system_data.cnt_20ms++;
-        system_data.cnt_50ms++;
+        board.cnt_1ms++;
+        board.cnt_2ms++;
+        board.cnt_5ms++;
+        board.cnt_10ms++;
+        board.cnt_20ms++;
+        board.cnt_50ms++;
         TIM_ClearITPendingBit(TIM6 , TIM_FLAG_Update);     // clear interrupt flag
     }
 #if SYSTEM_SUPPORT_OS == 1
@@ -106,10 +106,10 @@ void HardFault_Handler(void)
 #endif
 	for(i=0;i<10;i++)
 	{ 
-		BEEP0_TOGGLE();
-		delay_ms(100);
+        board.setBeepState(2);
+        delay_ms(100);
 	}
-//	__disable_fault_irq();     //¸´Î»
+//	__disable_fault_irq();    //reset
 //	NVIC_SystemReset();
 	
 #if SYSTEM_SUPPORT_OS == 1

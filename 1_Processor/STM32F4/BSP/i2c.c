@@ -62,7 +62,7 @@ void HF_Hardware_I2C_Init(I2C_TypeDef *I2Cx , uint8_t GPIO_AF)
 *
 * History:
 ***********************************************************************************************************************/
-void Hardware_I2C_Write_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uint8_t REG_Address,uint8_t REG_data)
+void HF_Hardware_I2C_Write_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uint8_t REG_Address,uint8_t REG_data)
 {
     
 }
@@ -87,7 +87,7 @@ void Hardware_I2C_Write_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uint8
 * History:
 ***********************************************************************************************************************/
 
-uint8_t Hardware_I2C_Read_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uint8_t REG_Address)
+uint8_t HF_Hardware_I2C_Read_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uint8_t REG_Address)
 {
     return 0;
 }
@@ -111,7 +111,7 @@ uint8_t Hardware_I2C_Read_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uin
 *
 * History:
 ***********************************************************************************************************************/
-int Hardware_I2C_Write_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
+int HF_Hardware_I2C_Write_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
                            ,uint8_t REG_Address,uint8_t *ptChar,uint8_t size)
 {
     return 0;
@@ -135,7 +135,7 @@ int Hardware_I2C_Write_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
 *
 * History:
 ***********************************************************************************************************************/
-int Hardware_I2C_Read_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
+int HF_Hardware_I2C_Read_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
                           ,uint8_t REG_Address,uint8_t * ptChar,uint8_t size)
 {
     return 0;
@@ -144,15 +144,15 @@ int Hardware_I2C_Read_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
 
 /***********************************************************************************************************************
 ***                                                                                                                  ***
-***                                          HF_Simulation_IIC_INIT                                                  ***
+***                                                  Simulation IIC                                                  ***
 ***                                                                                                                  ***
 ***********************************************************************************************************************/
 
 static void I2C_delay(uint8_t I2C_FastMode)
 {	
-    __nop();__nop();__nop();
-    __nop();__nop();__nop();
-    __nop();__nop();__nop();
+    __asm("nop");__asm("nop");__asm("nop");
+    __asm("nop"); __asm("nop");__asm("nop");
+    __asm("nop");__asm("nop");__asm("nop");
     if(!I2C_FastMode)
     {
         uint8_t i = 15;
@@ -355,7 +355,7 @@ static uint8_t I2C_ReadByte(uint8_t HF_I2Cx , uint8_t I2C_FastMode)
     return ReceiveByte;
 } 
 
-void Simulat_I2C_Write_Byte(uint8_t HF_I2Cx , uint8_t Equipment_Address , 
+void HF_Simulat_I2C_Write_Byte(uint8_t HF_I2Cx , uint8_t Equipment_Address ,
                             uint8_t REG_Address , uint8_t REG_data , uint8_t I2C_FastMode)
 {
     if(!I2C_Start(HF_I2Cx , I2C_FastMode))return ;
@@ -368,7 +368,7 @@ void Simulat_I2C_Write_Byte(uint8_t HF_I2Cx , uint8_t Equipment_Address ,
     I2C_Stop(HF_I2Cx , I2C_FastMode);
 }
 
-uint8_t Simulat_I2C_Read_Byte(uint8_t HF_I2Cx , uint8_t Equipment_Address
+uint8_t HF_Simulat_I2C_Read_Byte(uint8_t HF_I2Cx , uint8_t Equipment_Address
                               , uint8_t REG_Address , uint8_t I2C_FastMode)
 {   	
     uint8_t REG_data;
@@ -390,7 +390,7 @@ uint8_t Simulat_I2C_Read_Byte(uint8_t HF_I2Cx , uint8_t Equipment_Address
     return REG_data;
 }	
 
-int Simulat_I2C_Write_Buf(uint8_t HF_I2Cx , uint8_t Equipment_Address,uint8_t REG_Address,
+uint8_t HF_Simulat_I2C_Write_Buf(uint8_t HF_I2Cx , uint8_t Equipment_Address,uint8_t REG_Address,
                           uint8_t *ptChar , uint8_t size , uint8_t I2C_FastMode)
 {
     uint8_t i;
@@ -418,7 +418,7 @@ int Simulat_I2C_Write_Buf(uint8_t HF_I2Cx , uint8_t Equipment_Address,uint8_t RE
     return 1;
 }	
 
-int Simulat_I2C_Read_Buf(uint8_t HF_I2Cx , uint8_t Equipment_Address,uint8_t REG_Address,
+uint8_t HF_Simulat_I2C_Read_Buf(uint8_t HF_I2Cx , uint8_t Equipment_Address,uint8_t REG_Address,
                          uint8_t * ptChar , uint8_t size , uint8_t I2C_FastMode)
 {
     uint8_t i;

@@ -24,74 +24,80 @@ CPU_STK START_TASK_STK[START_TASK_STK_SIZE];
 void start_task(void *p_arg);
 
 #define BSP_TASK_PRIO		4
-#define BSP_TASK_STK_SIZE 		128
+#define BSP_TASK_STK_SIZE 		256
 OS_TCB  BSP_TASK_TCB;
 CPU_STK BSP_TASK_STK[BSP_TASK_STK_SIZE];
 void bsp_task(void *p_arg);
 
 #define MOTOR_TASK_PRIO		5	
-#define MOTOR_TASK_STK_SIZE 		128
+#define MOTOR_TASK_STK_SIZE 		256
 OS_TCB  MOTOR_TASK_TCB;
 CPU_STK MOTOR_TASK_STK[MOTOR_TASK_STK_SIZE];
 void motor_task(void *p_arg);
 
 #define HEAD_TASK_PRIO		6	
-#define HEAD_TASK_STK_SIZE 		128
+#define HEAD_TASK_STK_SIZE 		256
 OS_TCB  HEAD_TASK_TCB;
 CPU_STK HEAD_TASK_STK[HEAD_TASK_STK_SIZE];
 void head_task(void *p_arg);
 
 
 #define ROBOT_WHEEL_TASK_PRIO		7	
-#define ROBOT_WHEEL_TASK_STK_SIZE 		128
+#define ROBOT_WHEEL_TASK_STK_SIZE 		256
 OS_TCB  ROBOT_WHEEL_TASK_TCB;
 CPU_STK ROBOT_WHEEL_TASK_STK[ROBOT_WHEEL_TASK_STK_SIZE];
 void robot_wheel_task(void *p_arg);
 
 
 #define IMU_TASK_PRIO		8	
-#define IMU_TASK_STK_SIZE 		128
+#define IMU_TASK_STK_SIZE 		256
 OS_TCB  IMU_TASK_TCB;
 CPU_STK IMU_TASK_STK[IMU_TASK_STK_SIZE];
 void imu_task(void *p_arg);
 
 #define HF_LINK_TASK_PRIO		9	
-#define HF_LINK_TASK_STK_SIZE 		128
+#define HF_LINK_TASK_STK_SIZE 		256
 OS_TCB  HF_LINK_TASK_TCB;
 CPU_STK HF_LINK_TASK_STK[HF_LINK_TASK_STK_SIZE];
 void hf_link_task(void *p_arg);
 
-
-void System_Init(void)
+void constructorInit(void)
 {
-    //SCB->VTOR = FLASH_BASE | 0x10000;  //Bootloader
-    //INTX_DISABLE();  //close all interruption
-
-    HF_BSP_Init();
-
-    motor_top.motorTopInit();
-
-    hf_head.axServoInit();
-
-    hands_free_robot.robotWheelTopInit();
-
-    sbus.sbusInit();
-
-    IMU_Top_Init();
-
-    //INTX_ENABLE();	 //enable all interruption
-
-    printf("app start \r\n");
-
+    board = Board();
+    my_robot = RobotAbstract();
+    motor_top = MotorTop();
+    robot_head = HeadAX();
+    hands_free_robot = RobotWheel();
+    sbus = SBUS();
+    imu = IMU();
+    usart1_queue = Queue();
+    hf_link_pc_node =  HFLink(0x11,0x01,&my_robot);
+    hf_link_node_pointer=&hf_link_pc_node;
 }
 
+void systemInit(void)
+{
+#ifdef BOOTLOADER_ENABLE
+    SCB->VTOR = FLASH_BASE | 0x4000;  //16k Bootloader
+#endif
+    //INTX_DISABLE();  //close all interruption
+    board.boardBasicInit();
+    motor_top.motorTopInit(4 , 1560 , 0.02 , 0);
+    robot_head.axServoInit();
+    hands_free_robot.robotWheelTopInit();
+    sbus.sbusInit();
+    imu.topInit(1,0,1,1,0,0);
+    //INTX_ENABLE();	 //enable all interruption
+    printf("app start \r\n");
+}
 
 int main(void)
 {
     OS_ERR err;
     CPU_SR_ALLOC();
 
-    System_Init();
+    constructorInit();
+    systemInit();
 
     OSInit(&err);
     OS_CRITICAL_ENTER();//进入临界区
@@ -236,11 +242,11 @@ void bsp_task(void *p_arg)
     while(1)
     {
         bsp_task_i++;
-        HF_BSP_Cycle_Call();            // need time stm32f1  35us
+        board.boardBasicCall();            // need time stm32f1  35us
         if(bsp_task_i >= 5)
         {
             bsp_task_i=0;
-            HF_Set_Led_State(0,2);
+            board.setLedState(0,2);
         }
         OSTimeDlyHMSM(0,0,0,10,OS_OPT_TIME_HMSM_STRICT,&err); //delay 10ms   100hz
     }
@@ -263,7 +269,7 @@ void head_task(void *p_arg)
     p_arg = p_arg;
     while(1)
     {
-        hf_head.headTopCall();
+        robot_head.headTopCall();
         OSTimeDlyHMSM(0,0,0,50,OS_OPT_TIME_HMSM_STRICT,&err); //delay 50ms  20hz
     }
 }
@@ -286,12 +292,12 @@ void imu_task(void *p_arg)
     p_arg = p_arg;
     while(1)
     {
-        IMU_Top_Call();					        // stm32f4 -- 631us(fpu)
-        OSTimeDly(1,OS_OPT_TIME_PERIODIC,&err);
-        //OSTimeDlyHMSM(0,0,0,1,OS_OPT_TIME_HMSM_STRICT,&err); //delay 1ms  1000hz
+        imu.topCall();  				        // stm32f4 -- 631us(fpu)
+        //OSTimeDly(1,OS_OPT_TIME_PERIODIC,&err);
+        OSTimeDlyHMSM(0,0,0,1,OS_OPT_TIME_HMSM_STRICT,&err); //delay 1ms  1000hz
     }
 }
- 
+
 void hf_link_task(void *p_arg)
 {
     OS_ERR err;
@@ -304,20 +310,5 @@ void hf_link_task(void *p_arg)
         else {
             OSTimeDly(1,OS_OPT_TIME_PERIODIC,&err);
         }
-    }
-}
-
-void float_task(void *p_arg)
-{
-    OS_ERR err;
-    CPU_SR_ALLOC();
-    static float float_num=0.01;
-    while(1)
-    {
-        float_num+=0.01f;
-        OS_CRITICAL_ENTER();
-        printf("float_num is: %.4f\r\n",float_num);
-        OS_CRITICAL_EXIT();
-        OSTimeDlyHMSM(0,0,0,500,OS_OPT_TIME_HMSM_STRICT,&err); //delay 500ms
     }
 }

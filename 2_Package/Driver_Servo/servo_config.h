@@ -19,7 +19,7 @@
 #define SERVO_CONFIG_H
 
 #include "main_config.h"
-#include "BSP_TOP.h"
+#include "board.h"
 
 //the AX digital servo pose be divided into 1024 unit 0~0X3FF
 //counterclockwise is positive

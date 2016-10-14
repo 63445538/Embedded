@@ -9,7 +9,7 @@
 #include "hf_link_port.h"
 #endif
 
-static const unsigned short int MESSAGE_BUFER_SIZE = 100;  //limite one message's size
+static const unsigned short int MESSAGE_BUFER_SIZE = 120;  //limite one message's size
 /****structure for communications protocol , read Hands Free Link Manua.doc for detail****/
 typedef struct HFMessage{
     unsigned char sender_id;
@@ -62,12 +62,12 @@ enum Command{
 class HFLink
 {
 public:
-    HFLink(unsigned char my_id_=0x11 , unsigned char friend_id_=0x01 , RobotAbstract* my_robot_=0)
+    HFLink(unsigned char my_id_= 0x11 , unsigned char friend_id_= 0x01 , RobotAbstract* my_robot_=0)
     {
         hf_link_node_model = HF_LINK_NODE_MODEL ;
         port_num = 1 ;
         my_id = my_id_;         //0x11 means slave ,  read Hands Free Link Manua.doc for detail
-        friend_id = friend_id_;
+        friend_id = friend_id_; // 0x01 means master
         hf_link_ack_en = 0;
         my_robot=my_robot_;
         //enable hflink ack , generally, master disable and slave enable
@@ -92,7 +92,8 @@ public:
         tx_buffer_length=0;
     }
 
-public:   // only for master
+public:  
+    //only for master
     //the master can use masterSendCommand function to send data to slave
     //like SET_GLOBAL_SPEED , READ_ROBOT_SYSTEM_INFO, READ_ROBOT_SPEED...
     unsigned char masterSendCommand(const Command command_state);
@@ -100,7 +101,7 @@ public:   // only for master
     {
         return receive_package_renew[command_state];
     }
-    inline unsigned char* getSerializedData(void) 
+    inline unsigned char* getSerializedData(void)
     {
         return tx_buffer;
     }
@@ -109,11 +110,13 @@ public:   // only for master
         return tx_buffer_length;
     }
 
-public: // only for slave
+public: 
+    //only for slave
     //command updata flag , the robot need to traverse These flag to decide update his own behavior
     unsigned char receive_package_renew[LAST_COMMAND_FLAG];
 
-public:  // common
+public:  
+    //common
     unsigned char byteAnalysisCall(const unsigned char rx_byte);
 
     inline void set_my_id(unsigned char id){my_id =id ;}
@@ -121,6 +124,10 @@ public:  // common
     inline void set_port_num(unsigned char num){port_num =num ;}
     inline void enable_ack(void){if(hf_link_ack_en != 1) hf_link_ack_en=1;}
     inline void disable_ack(void){hf_link_ack_en=0;}
+		
+		
+		//unsigned char readCommandAnalysis(const Command command_state , unsigned char* p , const unsigned short int len);
+    //unsigned char setCommandAnalysis(const Command command_state , unsigned char* p , const unsigned short int len);
 
 private:
 
@@ -131,7 +138,7 @@ private:
     unsigned char hf_link_ack_en;         //enable hflink ack
     unsigned char shaking_hands_state;    //1 Success   0 Failed
 
-    // robot abstract pointer to hflink
+    //robot abstract pointer to hflink
     RobotAbstract* my_robot;
     Recstate   receive_state_;
     Command    command_state_;
@@ -139,10 +146,10 @@ private:
 
     float receive_message_count;
     float receive_package_count;
-    float package_update_frequency;   // how many message receive in one second
+    float package_update_frequency; //how many message receive in one second
 
     float send_packag_count;
-    unsigned char tx_buffer[MESSAGE_BUFER_SIZE + 20];
+    unsigned char tx_buffer[MESSAGE_BUFER_SIZE];
     unsigned tx_buffer_length;
 
     unsigned int receive_check_sum_;

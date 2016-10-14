@@ -1,7 +1,7 @@
 #ifndef __nrf24l01_driver_H__
 #define __nrf24l01_driver_H__
 
-#include "BSP_TOP.h"
+#include "bsplib.h"
 #include "nrf24l01_config.h"
 
 #define NRF_MODEL_RX				1			//普通接收

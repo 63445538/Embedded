@@ -4,19 +4,10 @@
 #include "imu_config.h"
 #include "imu_top.h"
 
-typedef struct IMU_QUATERNION{
-    IPType  q0;
-    IPType  q1;
-    IPType  q2;
-    IPType  q3;} IMU_QUATERNION;
-
-typedef struct FUSION_IPType_PRY_DGREE{
-    IPType pitch;
-    IPType roll;
-    IPType yaw;} FUSION_DOUBLE_PRY;
 
 class ARITHMETIC_MODEL
 {	
+
 public:
     ARITHMETIC_MODEL(void);
 
@@ -156,14 +147,14 @@ private:
     IMU_QUATERNION Quaternion_GlobalInterpolation(IPType t, IPType Theta_dgree, IMU_QUATERNION q_orin, IMU_QUATERNION q_target);	//四元数球形插值
     void QuaternionVector4_GlobalInterpolation(IPType t, IPType Theta_dgree, IPType *q_orin, IPType *q_target, IPType *q_result);
 
-    IMU_QUATERNION Quaternion_Differential(IMU_QUATERNION qq, MPU_FLOAT_XYZ Gyro);								//四元数微分方程
+    IMU_QUATERNION Quaternion_Differential(IMU_QUATERNION qq, FLOAT_XYZ Gyro);								//四元数微分方程
     void Quaternion_Differential_Matrix(IPType *qq, IPType *Gyro, IPType *dq);
 
     // 坐标系类
-    MPU_FLOAT_XYZ	Cb_to_Cn_XYZ(IMU_QUATERNION qq, MPU_FLOAT_XYZ Cb_XYZDta);								//载体坐标系>参考坐标系　XYZ轴数据
-    void Cb_to_Cn_XYZ_Matrix(IPType *qq, IPType *Cb_XYZDta, IPType *Cn_XYZDta_Return);						//同上，IPType*形式输入
+    FLOAT_XYZ	Cb_to_Cn_XYZ(IMU_QUATERNION qq, FLOAT_XYZ Cb_XYZDta);								//载体坐标系>参考坐标系　XYZ轴数据
+    void Cb_to_Cn_XYZ_Matrix(IPType *qq, IPType *Cb_XYZDta, IPType *Cn_XYZDta_Return);		//同上，IPType*形式输入
 
-    MPU_FLOAT_XYZ	Cn_to_Cb_XYZ(IMU_QUATERNION qq, MPU_FLOAT_XYZ Cn_XYZDta);								//参考坐标系>载体坐标系　XYZ轴数据
+    FLOAT_XYZ	Cn_to_Cb_XYZ(IMU_QUATERNION qq, FLOAT_XYZ Cn_XYZDta);								//参考坐标系>载体坐标系　XYZ轴数据
     void Cn_to_Cb_XYZ_Matrix(IPType *qq, IPType *Cn_XYZDta, IPType *Cb_XYZDta_Return);						//同上，IPType*形式输入
 
     // 过程算法函数 ////////////////////////////////////////////////////////////////////////////////////////////////////

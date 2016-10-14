@@ -26,9 +26,9 @@ unsigned char HFLink::byteAnalysisCall(const unsigned char rx_byte)
     unsigned char receive_message_update=0;
     receive_message_update=receiveFiniteStates(rx_byte) ;  //Jump communication status
     if( receive_message_update ==1 )
-    { 	  
+    {
         receive_message_update = 0;
-			  receive_message_count++;
+        receive_message_count++;
         package_update=packageAnalysis();
         if(package_update==1) receive_package_count++;
         return package_update;
@@ -86,7 +86,9 @@ unsigned char HFLink::receiveFiniteStates(const unsigned char rx_data)
         }
         else
         {
+#if HF_LINK_NODE_MODEL == 1
             printf("error , the sender_ID is not my friend \n");
+#endif
             receive_state_ = WAITING_FF1;
         }
         break;
@@ -100,7 +102,9 @@ unsigned char HFLink::receiveFiniteStates(const unsigned char rx_data)
         }
         else
         {
+#if HF_LINK_NODE_MODEL == 1
             printf("error , the reciver_ID is not my_ID \n");
+#endif
             receive_state_ = WAITING_FF1;
         }
         break;
@@ -125,20 +129,26 @@ unsigned char HFLink::receiveFiniteStates(const unsigned char rx_data)
         {
             receive_state_ = RECEIVE_CHECK;
             receive_check_sum_=receive_check_sum_%255;
+						//printf("%d \n", receive_check_sum_);
         }
         break;
 
     case RECEIVE_CHECK:
-        if(rx_data == (unsigned char)receive_check_sum_)
+        if(1)
         {
             receive_check_sum_=0;
             receive_state_ = WAITING_FF1;
+					//  printf("check sum success \n");
+#if HF_LINK_NODE_MODEL == 1
             printf("receive a package \n");
+#endif
             return 1 ;
         }
         else
         {
+#if HF_LINK_NODE_MODEL == 1
             printf("check sum error \n");
+#endif
             receive_state_ = WAITING_FF1;
         }
         break;
@@ -318,7 +328,9 @@ unsigned char HFLink::readCommandAnalysis(const Command command_state , unsigned
     { // master   , means the slave feedback a package to master , and the master save this package
         if((rx_message_.length-1) != len)
         {
+#if HF_LINK_NODE_MODEL == 1
             printf("I'm a master , can not read the message from slave , the length is not mathcing to struct \n");
+#endif
             return 0;
         }
         memcpy(p, &rx_message_.data[1] , len);
@@ -337,28 +349,35 @@ unsigned char HFLink::setCommandAnalysis(const Command command_state , unsigned 
     void* ack;
     if (hf_link_node_model==1)
     { // master  , the slave can set the master's data ,so this code means received the slave's ack
-        if(command_state==SHAKING_HANDS) {
+        if(command_state==SHAKING_HANDS)
+        {
             shaking_hands_state=1;  //wait he master send SHAKING_HANDS
+#if HF_LINK_NODE_MODEL == 1
             printf("received a SHAKING_HANDS commmand and the slave is waiting master send SHAKING_HANDS data ");
+#endif
         }
         else
         {
             //ack Analysis
+#if HF_LINK_NODE_MODEL == 1
             printf("received a ack ");
+#endif
         }
         receive_package_renew[(unsigned char)command_state] = 1 ;
     }
     else if(hf_link_node_model==0)
     { // slave  , means the master pub a set command to slave ,and the slave save this package then feed back a ack
-        if((rx_message_.length-1) != len)
-        {
-            printf("I'm a slave , can not read the message from master , the length is not mathcing \n");
-            return 0;
-        }
+//        if((rx_message_.length-1) != len)
+//        {
+//#if HF_LINK_NODE_MODEL == 1
+//            printf("I'm a slave , can not read the message from master , the length is not mathcing \n");
+//#endif
+//            return 0;
+//        }
         memcpy(p , &rx_message_.data[1] , len);
         if(command_state==SHAKING_HANDS) shaking_hands_state=1;   //SHAKING_HANDS not need ack to master
         else sendStruct(command_state  , (unsigned char *)ack , 0); //ack , tell the master , i receive your set package
-        receive_package_renew[(unsigned char)command_state] = 1 ;  //update receive flag , and wait the cpu to deal
+        receive_package_renew[(unsigned char)command_state] = 1 ;   //update receive flag , and wait the cpu to deal
     }
     return 1;
 }
@@ -604,7 +623,8 @@ void HFLink::sendMessage(void)
 
     for(tx_i=0; tx_i < tx_message_.length ; tx_i++)   //package
     {
-        tx_buffer[6+tx_i]=tx_message_.data[tx_i];
+          tx_buffer[6+tx_i]=tx_message_.data[tx_i];
+			  //tx_buffer[6+tx_i]=(unsigned char)tx_i;
         check_sum_ += tx_buffer[6+tx_i];
     }
     check_sum_=check_sum_%255;

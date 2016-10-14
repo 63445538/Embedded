@@ -63,9 +63,9 @@ static void I2C_delay(void)
 	//   while(i--){};
 	#endif
 	#if Hardware_Platform == 4 
-	__nop();__nop();__nop();
-	__nop();__nop();__nop();	
-	__nop();__nop();__nop();
+    asm("nop");asm("nop");asm("nop");
+    asm("nop"); asm("nop");asm("nop");
+    asm("nop");asm("nop");asm("nop");
 	#endif 
 }
 

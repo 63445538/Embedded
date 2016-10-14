@@ -24,17 +24,18 @@ extern "C" {
 
 void USART1_IRQHandler(void)
 {
+
     unsigned char data;
 #if SYSTEM_SUPPORT_OS == 1
     OSIntEnter();
 #endif
     if(USART1->SR&(1<<5))
     {
-			data=USART1->DR;
-			if(usart1_queue.fullCheck()==0){
-			 usart1_queue.putData(data);
-			}		  
-			USART_ClearITPendingBit(USART1, USART_IT_RXNE);   // clear interrupt flag
+        data=USART1->DR;
+        if(usart1_queue.fullCheck()==0){
+            usart1_queue.putData(data);
+        }
+        USART_ClearITPendingBit(USART1, USART_IT_RXNE);   // clear interrupt flag
     }
 #if SYSTEM_SUPPORT_OS == 1
     OSIntExit();
@@ -55,7 +56,7 @@ void USART2_IRQHandler(void)
     }
 #if SYSTEM_SUPPORT_OS == 1
     OSIntExit();
-#endif	
+#endif
 }
 
 void USART3_IRQHandler(void)
@@ -67,7 +68,7 @@ void USART3_IRQHandler(void)
     if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
     {
         data=USART_ReceiveData(USART3);
-        hf_head.gbpRxInterruptBuffer[(hf_head.gbRxBufferWritePointer++)] = data;
+        robot_head.gbpRxInterruptBuffer[(robot_head.gbRxBufferWritePointer++)] = data;
         USART_ClearITPendingBit(USART3,USART_IT_RXNE);  //clear interrupt flag
     }
 #if SYSTEM_SUPPORT_OS == 1
@@ -85,7 +86,7 @@ void USART3_IRQHandler(void)
 //    {
 //        data = USART_ReceiveData(UART4);
 //        USART_ClearITPendingBit(UART4, USART_IT_RXNE);     //clear interrupt flag
-//    }   
+//    }
 //#if SYSTEM_SUPPORT_OS == 1
 //    OSIntExit();
 //#endif
@@ -101,7 +102,7 @@ void USART3_IRQHandler(void)
 //    {
 //       data = USART_ReceiveData(UART5);
 //       USART_ClearITPendingBit(UART5 , USART_IT_RXNE);   //clear interrupt flag
-//    } 
+//    }
 //#if SYSTEM_SUPPORT_OS == 1
 //    OSIntExit();
 //#endif
@@ -130,12 +131,13 @@ void TIM6_DAC_IRQHandler(void)
 #endif
     if(TIM_GetITStatus(TIM6 , TIM_IT_Update)== SET  )
     {
-        system_data.cnt_1ms++;
-        system_data.cnt_2ms++;
-        system_data.cnt_5ms++;
-        system_data.cnt_10ms++;
-        system_data.cnt_20ms++;
-        system_data.cnt_50ms++;
+        board.cnt_1ms++;
+        board.cnt_2ms++;
+        board.cnt_5ms++;
+        board.cnt_10ms++;
+        board.cnt_20ms++;
+        board.cnt_50ms++;
+        board.cnt_500ms++;				
         TIM_ClearITPendingBit(TIM6 , TIM_FLAG_Update);     // clear interrupt flag
     }
 #if SYSTEM_SUPPORT_OS == 1
@@ -143,21 +145,20 @@ void TIM6_DAC_IRQHandler(void)
 #endif
 }
 
-
 void HardFault_Handler(void)
 {
-	  unsigned char i;
+    unsigned char i;
 #if SYSTEM_SUPPORT_OS == 1
     OSIntEnter();
 #endif
-	for(i=0;i<20;i++)
-	{
-		HF_Set_Beep_State(0,2);
-		delay_ms(100);
-	}
-//	__disable_fault_irq();     //¸´Î»
-//	NVIC_SystemReset();
-		
+    for(i=0;i<20;i++)
+    {
+        board.setBeepState(2);
+        delay_ms(100);
+    }
+    //	__disable_fault_irq();  //reset
+    //	NVIC_SystemReset();
+
 #if SYSTEM_SUPPORT_OS == 1
     OSIntExit();
 #endif

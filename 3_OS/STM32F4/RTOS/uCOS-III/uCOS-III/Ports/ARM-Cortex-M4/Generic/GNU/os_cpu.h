@@ -63,7 +63,6 @@ extern  "C" {
 #endif
 #define  OS_CPU_ARM_FP_REG_NBR                           32u
 
-
 /*
 *********************************************************************************************************
 *                                               MACROS
@@ -145,9 +144,11 @@ OS_CPU_EXT  CPU_STK  *OS_CPU_ExceptStkBase;
 *********************************************************************************************************
 */
 
+
 void  OSCtxSw              (void);
 void  OSIntCtxSw           (void);
 void  OSStartHighRdy       (void);
+
 
 void  OS_CPU_PendSVHandler (void);
 

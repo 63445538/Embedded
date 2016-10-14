@@ -1,4 +1,4 @@
-/***********************************************************************************************************************
+﻿/***********************************************************************************************************************
 * Copyright (c) Hands Free Team. All rights reserved.
 * FileName: imu_top_arithmetic_model.cpp
 * Contact:  QQ Exchange Group -- 521037187
@@ -27,11 +27,11 @@
 *									2.系数未优化 配置与config.h
 ***********************************************************************************************************************/
 
-
+#include "stdlib.h"
 #include "imu_top_arithmetic_model.h"
 
-#define degree2radian	0.0174f		// 度 到 弧度
-#define radian2degree 57.3f			// 弧度 到 度
+#define degree2radian	0.0174f		
+#define radian2degree 57.3f		
 
 ARITHMETIC_MODEL imu_arithmetic_model;
 
@@ -52,7 +52,7 @@ ARITHMETIC_MODEL::ARITHMETIC_MODEL()
 
 /***********************************************************************************************************************
 ***                                                                                                                  ***
-***                                 以下是 基本计算函数                                                  				 ***
+***                                 以下是 基本计算函数                                                  	     ***
 ***                                                                                                                  ***
 ***********************************************************************************************************************/
 
@@ -580,7 +580,7 @@ void ARITHMETIC_MODEL::QuaternionVector4_GlobalInterpolation(IPType t, IPType Th
 }
 
 /***********************************************************************************************************************
-* Function:   	IMU_QUATERNION ARITHMETIC::Quaternion_Differential(IMU_QUATERNION qq, MPU_FLOAT_XYZ Gyro)
+* Function:   	IMU_QUATERNION ARITHMETIC::Quaternion_Differential(IMU_QUATERNION qq, FLOAT_XYZ Gyro)
 *
 * Scope:        private
 *
@@ -595,19 +595,19 @@ void ARITHMETIC_MODEL::QuaternionVector4_GlobalInterpolation(IPType t, IPType Th
 * History:
 * chenyingbing  2015.12.1   V1.6      creat
 ***********************************************************************************************************************/
-IMU_QUATERNION ARITHMETIC_MODEL::Quaternion_Differential(IMU_QUATERNION qq, MPU_FLOAT_XYZ Gyro)
+IMU_QUATERNION ARITHMETIC_MODEL::Quaternion_Differential(IMU_QUATERNION qq, FLOAT_XYZ Gyro)
 {
     IMU_QUATERNION dq_return;
 
     //转化为弧度制
-    Gyro.X *= degree2radian;
-    Gyro.Y *= degree2radian;
-    Gyro.Z *= degree2radian;
+    Gyro.x *= degree2radian;
+    Gyro.y *= degree2radian;
+    Gyro.z *= degree2radian;
 
-    dq_return.q0 = (-qq.q1*Gyro.X - qq.q2*Gyro.Y - qq.q3*Gyro.Z);
-    dq_return.q1 = ( qq.q0*Gyro.X + qq.q2*Gyro.Z - qq.q3*Gyro.Y);
-    dq_return.q2 = ( qq.q0*Gyro.Y - qq.q1*Gyro.Z + qq.q3*Gyro.X);
-    dq_return.q3 = ( qq.q0*Gyro.Z + qq.q1*Gyro.Y - qq.q2*Gyro.X);
+    dq_return.q0 = (-qq.q1*Gyro.x - qq.q2*Gyro.y - qq.q3*Gyro.z);
+    dq_return.q1 = ( qq.q0*Gyro.x + qq.q2*Gyro.z - qq.q3*Gyro.y);
+    dq_return.q2 = ( qq.q0*Gyro.y - qq.q1*Gyro.z + qq.q3*Gyro.x);
+    dq_return.q3 = ( qq.q0*Gyro.z + qq.q1*Gyro.y - qq.q2*Gyro.x);
 
     return dq_return;
 }
@@ -633,7 +633,7 @@ void ARITHMETIC_MODEL::Quaternion_Differential_Matrix(IPType *qq, IPType *Gyro, 
 *************************************************************************************************************************/
 
 /***********************************************************************************************************************
-* Function:     MPU_FLOAT_XYZ	ARITHMETIC::Cb_to_n_XYZ(IMU_QUATERNION qq, MPU_FLOAT_XYZ Cb_XYZDta)
+* Function:     FLOAT_XYZ	ARITHMETIC::Cb_to_n_XYZ(IMU_QUATERNION qq, FLOAT_XYZ Cb_XYZDta)
 *
 * Scope:        private
 *
@@ -648,9 +648,9 @@ void ARITHMETIC_MODEL::Quaternion_Differential_Matrix(IPType *qq, IPType *Gyro, 
 * History:
 * chenyingbing  2015.12.1   V1.6      creat
 ***********************************************************************************************************************/
-MPU_FLOAT_XYZ	ARITHMETIC_MODEL::Cb_to_Cn_XYZ(IMU_QUATERNION qq, MPU_FLOAT_XYZ Cb_XYZDta)
+FLOAT_XYZ	ARITHMETIC_MODEL::Cb_to_Cn_XYZ(IMU_QUATERNION qq, FLOAT_XYZ Cb_XYZDta)
 {
-    MPU_FLOAT_XYZ XYZ_Return;
+    FLOAT_XYZ XYZ_Return;
 
     IPType q0q1 = qq.q0*qq.q1;
     IPType q0q2 = qq.q0*qq.q2;
@@ -662,13 +662,13 @@ MPU_FLOAT_XYZ	ARITHMETIC_MODEL::Cb_to_Cn_XYZ(IMU_QUATERNION qq, MPU_FLOAT_XYZ Cb
     IPType q2q3 = qq.q2*qq.q3;
     IPType q3q3 = qq.q3*qq.q3;
 
-    IPType dealx = (IPType)Cb_XYZDta.X;
-    IPType dealy = (IPType)Cb_XYZDta.Y;
-    IPType dealz = (IPType)Cb_XYZDta.Z;
+    IPType dealx = (IPType)Cb_XYZDta.x;
+    IPType dealy = (IPType)Cb_XYZDta.y;
+    IPType dealz = (IPType)Cb_XYZDta.z;
 
-    XYZ_Return.X = (2*dealx*(0.5f - q2q2 - q3q3) + 2*dealy*(q1q2 - q0q3) + 2*dealz*(q1q3 + q0q2));
-    XYZ_Return.Y = (2*dealx*(q1q2 + q0q3) + 2*dealy*(0.5f - q1q1 - q3q3) + 2*dealz*(q2q3 - q0q1));
-    XYZ_Return.Z = (2*dealx*(q1q3 - q0q2) + 2*dealy*(q2q3 + q0q1) + 2*dealz*(0.5f - q1q1 - q2q2));
+    XYZ_Return.x = (2*dealx*(0.5f - q2q2 - q3q3) + 2*dealy*(q1q2 - q0q3) + 2*dealz*(q1q3 + q0q2));
+    XYZ_Return.y = (2*dealx*(q1q2 + q0q3) + 2*dealy*(0.5f - q1q1 - q3q3) + 2*dealz*(q2q3 - q0q1));
+    XYZ_Return.z = (2*dealx*(q1q3 - q0q2) + 2*dealy*(q2q3 + q0q1) + 2*dealz*(0.5f - q1q1 - q2q2));
 
     return XYZ_Return;
 }
@@ -699,7 +699,7 @@ void ARITHMETIC_MODEL::Cb_to_Cn_XYZ_Matrix(IPType *qq, IPType *Cb_XYZDta, IPType
 }
 
 /***********************************************************************************************************************
-* Function:     MPU_FLOAT_XYZ	ARITHMETIC::Cn_to_b_XYZ(IMU_QUATERNION qq, MPU_FLOAT_XYZ Cn_XYZDta)
+* Function:     FLOAT_XYZ	ARITHMETIC::Cn_to_b_XYZ(IMU_QUATERNION qq, FLOAT_XYZ Cn_XYZDta)
 *
 * Scope:        private
 *
@@ -714,9 +714,9 @@ void ARITHMETIC_MODEL::Cb_to_Cn_XYZ_Matrix(IPType *qq, IPType *Cb_XYZDta, IPType
 * History:
 * chenyingbing  2015.12.1   V1.6      creat
 ***********************************************************************************************************************/
-MPU_FLOAT_XYZ	ARITHMETIC_MODEL::Cn_to_Cb_XYZ(IMU_QUATERNION qq, MPU_FLOAT_XYZ Cn_XYZDta)
+FLOAT_XYZ	ARITHMETIC_MODEL::Cn_to_Cb_XYZ(IMU_QUATERNION qq, FLOAT_XYZ Cn_XYZDta)
 {
-    MPU_FLOAT_XYZ XYZ_Return;
+    FLOAT_XYZ XYZ_Return;
 
     IPType q0q1 = qq.q0*qq.q1;
     IPType q0q2 = qq.q0*qq.q2;
@@ -728,13 +728,13 @@ MPU_FLOAT_XYZ	ARITHMETIC_MODEL::Cn_to_Cb_XYZ(IMU_QUATERNION qq, MPU_FLOAT_XYZ Cn
     IPType q2q3 = qq.q2*qq.q3;
     IPType q3q3 = qq.q3*qq.q3;
 
-    IPType dealx = (IPType)Cn_XYZDta.X;
-    IPType dealy = (IPType)Cn_XYZDta.Y;
-    IPType dealz = (IPType)Cn_XYZDta.Z;
+    IPType dealx = (IPType)Cn_XYZDta.x;
+    IPType dealy = (IPType)Cn_XYZDta.y;
+    IPType dealz = (IPType)Cn_XYZDta.z;
 
-    XYZ_Return.X = (2*dealx*(0.5f - q2q2 - q3q3) + 2*dealy*(q1q2 + q0q3) + 2*dealz*(q1q3 - q0q2));
-    XYZ_Return.Y = (2*dealx*(q1q2 - q0q3) + 2*dealy*(0.5f - q1q1 - q3q3) + 2*dealz*(q2q3 + q0q1));
-    XYZ_Return.Z = (2*dealx*(q1q3 + q0q2) + 2*dealy*(q2q3 - q0q1) + 2*dealz*(0.5f - q1q1 - q2q2));
+    XYZ_Return.x = (2*dealx*(0.5f - q2q2 - q3q3) + 2*dealy*(q1q2 + q0q3) + 2*dealz*(q1q3 - q0q2));
+    XYZ_Return.y = (2*dealx*(q1q2 - q0q3) + 2*dealy*(0.5f - q1q1 - q3q3) + 2*dealz*(q2q3 + q0q1));
+    XYZ_Return.z = (2*dealx*(q1q3 + q0q2) + 2*dealy*(q2q3 - q0q1) + 2*dealz*(0.5f - q1q1 - q2q2));
 
     return XYZ_Return;
 }
@@ -842,7 +842,7 @@ void ARITHMETIC_MODEL::Set_ModelInitial(void)
     static unsigned int Initial_cord = 100;
     IMU_QUATERNION qq_deal;
 
-    if(mpu6050.GYRO_OFFSET_OK == 1){									//已经矫正完GYRO零漂
+    if(mpu6050.gyro_offset_flag == 1){									//已经矫正完GYRO零漂
         if(!Initial_cord)
         {
             if(!Imu_Top_fusion_HavingInitial)
@@ -905,21 +905,21 @@ void ARITHMETIC_MODEL::Set_ModelInitial(void)
 void ARITHMETIC_MODEL::ModelCommanState_Update(void)
 {
     //公共变量
-    Z_ACCxyz[0] = mpu6050.ACC_Normal_LongFilter.X;
-    Z_ACCxyz[1] = mpu6050.ACC_Normal_LongFilter.Y;
-    Z_ACCxyz[2] = mpu6050.ACC_Normal_LongFilter.Z;
+    Z_ACCxyz[0] = mpu6050.acc_normal_long_filter.x;
+    Z_ACCxyz[1] = mpu6050.acc_normal_long_filter.y;
+    Z_ACCxyz[2] = mpu6050.acc_normal_long_filter.z;
 
     Vector3_Norm(Z_ACCxyz);						//单位化 Z_ACCxyz
 
-    Z_Hmcxyz[0] = hmc5883l.HMC_Normal.X;
-    Z_Hmcxyz[1] = hmc5883l.HMC_Normal.Y;
-    Z_Hmcxyz[2] = hmc5883l.HMC_Normal.Z;
+    Z_Hmcxyz[0] = hmc5883l.hmc_normal.x;
+    Z_Hmcxyz[1] = hmc5883l.hmc_normal.y;
+    Z_Hmcxyz[2] = hmc5883l.hmc_normal.z;
 
     Vector3_Norm(Z_Hmcxyz);						//单位化 Z_Hmcxyz
 
-    Ut[0] = mpu6050.GYRO_Normal_LongFilter.X;
-    Ut[1]= 	mpu6050.GYRO_Normal_LongFilter.Y;
-    Ut[2] = mpu6050.GYRO_Normal_LongFilter.Z;
+    Ut[0] = mpu6050.gyro_normal_long_filter.x;
+    Ut[1]= 	mpu6050.gyro_normal_long_filter.y;
+    Ut[2] = mpu6050.gyro_normal_long_filter.z;
 
     Cn_Gravity[0] = 0;
     Cn_Gravity[1] = 0;
@@ -985,7 +985,7 @@ void ARITHMETIC_MODEL::XState2_Predict(IPType Imu_T)
 *
 * Description:	获得 加速度计 磁罗盘 测量的pith,roll,yaw角
 *               mode = 1: 由ACC_NORMAL的数据进行测量
-*								mode = 2: 由ACC_Normal_LongFilter的数据进行测量
+*								mode = 2: 由acc_normal_long_filter的数据进行测量
 * Arguments: 
 * 
 * Return: 
@@ -999,9 +999,9 @@ void ARITHMETIC_MODEL::GetAccHmc_MesAngle_dgree(unsigned char mode)
 {
     IPType GG;
     IPType ax,ay,az;
-    IPType mx = hmc5883l.HMC_Normal.X;
-    IPType my = hmc5883l.HMC_Normal.Y;
-    IPType mz = hmc5883l.HMC_Normal.Z;
+    IPType mx = hmc5883l.hmc_normal.x;
+    IPType my = hmc5883l.hmc_normal.y;
+    IPType mz = hmc5883l.hmc_normal.z;
     IPType p,r,y,d1,d2;
 
     //如果输入错误，则按mode = 2使用
@@ -1011,15 +1011,15 @@ void ARITHMETIC_MODEL::GetAccHmc_MesAngle_dgree(unsigned char mode)
 
     if(mode == 1)
     {
-        ax = mpu6050.ACC_Normal.X;
-        ay = mpu6050.ACC_Normal.Y;
-        az = mpu6050.ACC_Normal.Z;
+        ax = mpu6050.acc_normal.x;
+        ay = mpu6050.acc_normal.y;
+        az = mpu6050.acc_normal.z;
     }
     if(mode == 2)
     {
-        ax = mpu6050.ACC_Normal_LongFilter.X;
-        ay = mpu6050.ACC_Normal_LongFilter.Y;
-        az = mpu6050.ACC_Normal_LongFilter.Z;
+        ax = mpu6050.acc_normal_long_filter.x;
+        ay = mpu6050.acc_normal_long_filter.y;
+        az = mpu6050.acc_normal_long_filter.z;
     }
     GG = M_Smart_sqrt(ax*ax + ay*ay + az*az);
     p  = -base_math_trigonometic.m_asin(ax/GG);
@@ -1267,10 +1267,8 @@ void ARITHMETIC_MODEL::XState_KalmanFusionCall_Process1(void)
 #define 	K2_Amplify_Gate1		1.5f
 #define 	K2_Amplify_Gate2		5.0f
 
-#if ARITHMETIC_MPU6050_EXTENDEDKALMAN > 0u
     static IPType Gradient_ZAxyz[3];		// 梯度步进 处理变量XYZ
     static IPType K2_Amplify_AccCov[2];		// 放大系数2处理变量
-#endif
 
     if(Fusion_En)
     {
@@ -1302,9 +1300,9 @@ void ARITHMETIC_MODEL::XState_KalmanFusionCall_Process1(void)
             }
         }
 
-        Mes_Covariance_1[0] = 	mpu6050.ACC_Covariance_LongFliter.X * K_Amplify_AccCov * K2_Amplify_AccCov[1];
-        Mes_Covariance_1[4] = 	mpu6050.ACC_Covariance_LongFliter.Y * K_Amplify_AccCov * K2_Amplify_AccCov[0];
-        Mes_Covariance_1[8] = 	mpu6050.ACC_Covariance_LongFliter.Z * K_Amplify_AccCov * 2.5f;
+        Mes_Covariance_1[0] = 	mpu6050.acc_covariance_long_fliter.x * K_Amplify_AccCov * K2_Amplify_AccCov[1];
+        Mes_Covariance_1[4] = 	mpu6050.acc_covariance_long_fliter.y * K_Amplify_AccCov * K2_Amplify_AccCov[0];
+        Mes_Covariance_1[8] = 	mpu6050.acc_covariance_long_fliter.z * K_Amplify_AccCov * 2.5f;
 
         //Pre_Covariance
         if(once){

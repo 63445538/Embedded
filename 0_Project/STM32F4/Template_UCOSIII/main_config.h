@@ -18,27 +18,16 @@
 #define __main_config_H__
 
 /*****************************system config****************************************************************************/
-#define Hands_Free_Version  2.0                   //THE Version of HANDS FREE
+#define HANDS_FREE_EMBEDDED_VERSION  2.0
 //Whether or not printf DEBUG info to usart1
 #define DEBUG 0
 /**********************************************************************************************************************/
 
 
 /********************************************processor config**********************************************************/
-// Precompiled  choose  you can Include the file you want to save flash
-#define BSP_CFG_RTC_EN                0u          //Whether or not Include code RTC time
-#define BSP_CFG_WDG_WKUP_EN           0u          //Whether or not Include code watch dog  and Low power consumption
-#define BSP_CFG_FLASH_EN              0u          //Whether or not Include code FLASH
-#define BSP_CFG_LED_KEY_EN            1u          //Whether or not Include code led and key
-#define BSP_CFG_USART_EN              1u          //Whether or not Include code led and keyUSART
-#define BSP_CFG_ADC_DAC_EN            0u          //Whether or not Include code ADC_DAC
-#define BSP_CFG_TIMER_EN              0u          //Whether or not Include code TIMER
-#define BSP_CFG_PWMIN_EN              0u          //Whether or not Include code pwm input
-#define BSP_CFG_PWMOUT_EN             0u          //Whether or not Include code pwm output
-#define BSP_CFG_ENCODER_EN            0u          //Whether or not Include code motor encoder
-#define BSP_CFG_SPI_EN                0u          //Whether or not Include code SPI
-#define BSP_CFG_I2C_EN                0u          //Whether or not Include code I2C
-#define BSP_CFG_CAN_EN                0u          //Whether or not Include code CAN
+#define CONTROL_UNIT_V2
+
+
 /**********************************************************************************************************************/
 
 

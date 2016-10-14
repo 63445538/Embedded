@@ -108,53 +108,13 @@
 #define RX_TIMEOUT_COUNT2   500L
 #define RX_TIMEOUT_COUNT1  (RX_TIMEOUT_COUNT2*10L)
 
-
-ServoDigital::ServoDigital()
-{
-    gbpParameter[0]=0;
-    gbRxBufferReadPointer=0;
-    gbpRxBuffer[0]=0;
-    gbpTxBuffer[0]=0;
-    gbRxBufferWritePointer=0;
-    gbpRxInterruptBuffer[0]=0;
-    Timer_count=0;
-    axOline[0]=0;
-    axOlineNum=0;
-    delayCount=0;
-}
-
 void ServoDigital::axServoInit(void)
 {
-
-    GPIO_InitTypeDef GPIO_InitStructure;
-
-#if HARDWARE_PLATFORM== 1
-
-    HF_Usart_Init(SERVO_CONTROL_USART,1000000,0);
-
-#endif
-
-#if HARDWARE_PLATFORM== 4
-
-    HF_Usart_Init(SERVO_CONTROL_USART,1000000,2);
-    RCC_AHB1PeriphClockCmd(RCC_AX_IO , ENABLE);
-
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-
-    GPIO_InitStructure.GPIO_Pin = GPIO_AX_IO_Pin;
-    GPIO_Init(GPIO_AX_IO , &GPIO_InitStructure);
-
-#endif
-
-
+    board.axServoInterfaceInit();
 }
 
 uint8_t ServoDigital::TxPacket(uint8_t bID, uint8_t bInstruction, uint8_t bParameterLength)
 {
-
     //bParameterLength为参数PARAMETER长度，返回数据包长信息(除掉指令等)
     uint8_t bCount, bPacketLength;
     uint8_t bCheckSum;
@@ -179,17 +139,14 @@ uint8_t ServoDigital::TxPacket(uint8_t bID, uint8_t bInstruction, uint8_t bParam
     //USART_ITConfig(SERVO_CONTROL_USART, USART_IT_RXNE, ENABLE);
     CLEAR_BUFFER;
 
-    AX_TXD;
+    board.axServoTxModel();
 
     for (bCount = 0; bCount < bPacketLength; bCount++)
     {
-        while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
-        USART_SendData(SERVO_CONTROL_USART, gbpTxBuffer[bCount]);
+        board.axServoSendTxByte(gbpTxBuffer[bCount]);
     }
 
-    while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
-
-    AX_RXD;
+    board.axServoRxModel();
     //for(i=0;i<0x8fff;i++);
     return (bPacketLength);		   //返回发送的所有数据长度
 }
@@ -390,7 +347,7 @@ void ServoDigital::getServoConnective(void)
             axOline[axOlineNum++] = bCount;
     }
 
-    packageReplyToDebug(SERVO_DEBUG_USART, ServoIDNumber, (uint8_t *) &axOline[0], axOlineNum);
+    packageReplyToDebug( ServoIDNumber, (uint8_t *) &axOline[0], axOlineNum);
 
 }
 
@@ -404,7 +361,7 @@ void ServoDigital::moveServoPosition(uint8_t *p, uint8_t num)
         err |= axSendPosition(*p + (3 * i), pos, DEFAULTSPEED);
     }
 
-    packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
+    packageReplyToDebug( err, PNULL, 0);
 }
 
 
@@ -418,7 +375,7 @@ void ServoDigital::moveServoPosWithSpeed(uint8_t *p, uint8_t num)
         speed = *(p + (5* i) + 4) * 256 + *(p + (5 * i)+3 );
         err |= axSendPosition(*(p + (5 * i)), pos, speed);
     }
-    packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
+    packageReplyToDebug( err, PNULL, 0);
 }
 
 /*GetServoPosition(uint8_t *p,uint8_t num)
@@ -449,7 +406,7 @@ void ServoDigital::getServoPosition(uint8_t *p, uint8_t num)
             retdata[1] = tmp & 0xff;
             retdata[2] = (tmp&0xff00) >> 8;
         }
-        packageReplyToDebug(SERVO_DEBUG_USART, ResServoPosInfo, (uint8_t *) &retdata[0],
+        packageReplyToDebug( ResServoPosInfo, (uint8_t *) &retdata[0],
                 axOlineNum * 3);
         break;
         //case 2:
@@ -461,7 +418,7 @@ void ServoDigital::getServoPosition(uint8_t *p, uint8_t num)
             retdata[i*3+1] = tmp & 0xff;
             retdata[i*3+2] = (tmp & 0xff00) >> 8;
         }
-        packageReplyToDebug(SERVO_DEBUG_USART, ResServoPosInfo, (uint8_t *) &retdata,
+        packageReplyToDebug( ResServoPosInfo, (uint8_t *) &retdata,
                             num * 3);
         break;
     }
@@ -478,17 +435,17 @@ void ServoDigital::enableServo(uint8_t *p, uint8_t num)
         if (*p0 == BROADCASTING_ID) { //读取全部舵机pos
             axTorqueOnAll();
             err = OK;
-            packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
+            packageReplyToDebug( err, PNULL, 0);
 
         } else {
             err = axTorqueOn(*p0);
-            packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
+            packageReplyToDebug( err, PNULL, 0);
         }
         break;
     default:
         for (i = 0; i < num; i++)
             err |= axTorqueOn(*p0++);
-        packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
+        packageReplyToDebug( err, PNULL, 0);
         break;
     }
 }
@@ -503,16 +460,16 @@ void ServoDigital::disableServo(uint8_t *p, uint8_t num)
         if (*p0 == BROADCASTING_ID) { //读取全部舵机pos
             axTorqueOffAll();
             err = OK;
-            packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
+            packageReplyToDebug( err, PNULL, 0);
         } else {
             err = axTorqueOff(*p0++);
-            packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
+            packageReplyToDebug( err, PNULL, 0);
         }
         break;
     case 2:
         for (i = 0; i < num; i++)
             err |= axTorqueOff(*p0);
-        packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
+        packageReplyToDebug( err, PNULL, 0);
         break;
     }
 }
@@ -523,22 +480,20 @@ void ServoDigital::executeInstruction(uint8_t *p, uint8_t num)
 {
     uint8_t err;
     uint8_t i;
-    //Send
-    AX_TXD;
+
+    board.axServoTxModel();  //Send
     for (i = 0; i < num; i++)
     {
-        while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
-        USART_SendData(SERVO_CONTROL_USART, *p++);
+        board.axServoSendTxByte(*p++);
     }
-    while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
-    //Rec
-    AX_RXD;
+
+    board.axServoRxModel(); //Rec
+    //for(i=0;i<0x8fff;i++);
     if (RxPacket(DEFAULT_RETURN_PACKET_SIZE) == DEFAULT_RETURN_PACKET_SIZE)
         err = OK;
     else
         err = NoSuchServo;
-    packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
-
+    packageReplyToDebug( err, PNULL, 0);
 }
 
 
@@ -566,22 +521,19 @@ void ServoDigital::executeInstruction(uint8_t *p, uint8_t num)
     packageLength = (uint16_t)(*(p+1)+(uint16_t)*(p+2)*256);		//可能有问题 （必须滴）
     packageNum = (poolSize-3)/ packageLength;
     p = p+3;
-    AX_TXD;;
+    board.axServoTxModel();;
     for (i = 0; i < packageNum; i++) {
         //启动延时函数
         MiniActionBeginFlag = 1;
         while(NewKeyActionFlag != 1)
             ;
         for (j = 0; j <packageLength; j++) {
-            while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET)
-                ;
-            USART_SendData(SERVO_CONTROL_USART, *p++);
+board.axServoSendTxByte(*p++);
         }
-        while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET)
-            ;
+
         NewKeyActionFlag = 0;
     }
-    AX_RXD;;
+    board.axServoRxModel();
 }  
 *********************/
 
@@ -599,26 +551,24 @@ void ServoDigital::TxPacketBroadSynWrite(uint8_t bInstruction, uint8_t bParamete
     }
     bPacketLength = bParameterLength + 5;	//可能有问题
 
-    AX_TXD;
+    board.axServoTxModel();
     for (bCount = 0; bCount < bPacketLength; bCount++) {
-        while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
-        USART_SendData(SERVO_CONTROL_USART, gbpTxBuffer[bCount]);
+        board.axServoSendTxByte(gbpTxBuffer[bCount]);
     }
-    while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
-    AX_RXD;
-}
 
+    board.axServoRxModel();
+}
 
 void ServoDigital::changeServoID(uint8_t *p, uint8_t num)
 {
     gbpParameter[0] = P_ID; //舵机ID地址
     gbpParameter[1] = *p;
-    if(num == 1){							 //一次只能给1个制定的ID
+    if(num == 1){			 //一次只能给1个制定的ID
         TxPacket(BROADCASTING_ID,INST_WRITE,2);
         getServoConnective();
     }
     else{
-        // packageReplyToDebug(SERVO_DEBUG_USART, CheckError, (void *)0, 0);
+        // packageReplyToDebug( CheckError, (void *)0, 0);
     }
 }
 
@@ -638,51 +588,36 @@ uint8_t ServoDigital::axSendSpeed(uint8_t bID, uint16_t target_speed)
 //length只包含data的长度
 //ff Length_L	  Length_H	 0	 2	   command_type	****	   Check_Sum
 //command_type代被回复指令类型，data代表返回数据的指针,length代表要发送的也就是我的下家返回给我的数据长度，要打包送给上位机
-void ServoDigital::packageReplyToDebug(USART_TypeDef* USARTx, unsigned char command_type,unsigned char * data, unsigned int length)
+void ServoDigital::packageReplyToDebug(unsigned char command_type,unsigned char * data, unsigned int length)
 {		
 
 #if SERVO_DEBUG_EN ==1
-
     unsigned char Length_H, Length_L, Check_Sum = 0;
     unsigned int j = 0;
     Length_H = (length + 6) >> 8;
     Length_L = (length + 6);
 
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);	 //发送数据寄存器空标志位
-    USART_SendData(USARTx, 0XFF); //包头
-
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
-    USART_SendData(USARTx, Length_L); //长度l
+    board.debugPutChar(0XFF); //包头
+    board.debugPutChar(Length_L); //长度1
     Check_Sum = Check_Sum + Length_L;
-
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, Length_H); //长度2
+    board.debugPutChar(Length_H); //长度2
     Check_Sum = Check_Sum + Length_H;
-
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, 0); //ID =0,代表数字舵机
-
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
-    USART_SendData(USARTx, 2); //代表这是回复信息
-    Check_Sum = Check_Sum + 2;
-
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
-    USART_SendData(USARTx, command_type); //代表指令类型
+    board.debugPutChar(0); //ID =0,代表数字舵机
+    board.debugPutChar(2); //代表这是回复信息
+    Check_Sum = Check_Sum + 2; //代表指令类型
+    board.debugPutChar(command_type);
     Check_Sum = Check_Sum + command_type;
-
     //发送有效数据
     for (j = 0; j < length; j++)
     {
-        while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
-        USART_SendData(USARTx, *(data + j));
+        board.debugPutChar(*(data + j));
         Check_Sum = Check_Sum + *(data + j);
     }
-
     Check_Sum = ~Check_Sum; //计算校验和
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
-    USART_SendData(USARTx, Check_Sum); //代表指令类型
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
+
+    board.debugPutChar(Check_Sum);
     Check_Sum = 0;
+
 #endif
 
     return;

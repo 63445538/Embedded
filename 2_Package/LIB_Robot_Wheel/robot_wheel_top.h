@@ -19,7 +19,6 @@
 
 class RobotWheel:public TF_CLASS
 {
-
 public:
     RobotWheel()
     {
@@ -37,17 +36,19 @@ private:
         float  m2;
         float  m3;
         float  m4;};
-    RobotMotor d_motor_len_filter_;
-
+    RobotMotor d_motor_len_filter_ , expect_angle_speed_;
+    unsigned char robot_wheel_model;
     unsigned char control_command_quality;  // 0~100  if<30 control_command_quality is bad and Control Disable  , otherwise control enable
     unsigned char robot_control_en;         // Whether or not enable motor control
     float call_frequency;
     float l_filter ;
+
     void robotDataUpdate(void);
     void chassisControl(void);
-    void robotCoordCalc(void);
     void headControl(void);
     void armControl(void);
+    void robotCoordCalc(void);
+    void remoteAnalysis(void);
 };
 
 extern RobotAbstract my_robot;

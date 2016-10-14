@@ -1,35 +1,31 @@
-#ifndef __imu_top_H__
-#define __imu_top_H__
+#ifndef IMU_TOP_H
+#define IMU_TOP_H
 
 #include "imu_config.h"
+#include "mpu6050.h"
+#include "bmp085.h"
+#include "ms611.h"
+#include "hmc5883l.h"
+#include "gps.h"
 
-#if SYSTEM_SUPPORT_IMU_I2C > 0u	
+class IMU
+{
+public:
+    IMU() {
+        imu_call_1 = 0;
+        imu_call_2 = 0;
+        imu_call_3 = 0;
+        imu_call_4 = 0;
+        imu_call_5 = 0;
+    }
+    void topInit(uint8_t mpu , uint8_t bmp , uint8_t hmc ,
+                 uint8_t ms6 , uint8_t gps , uint8_t debug);
+    void topCall(void);  //1000HZ
+private:
+    uint8_t mpu6050_en , bmp085_en , ms611_en , hmc085_en , gps_en , debug_en ;
+    uint8_t imu_call_1 , imu_call_2 , imu_call_3 , imu_call_4 , imu_call_5;
+};
+extern IMU imu;
 
-#if SYSTEM_SUPPORT_IMU_MPU6050  > 0u
-#include "imu_mpu6050_driver.h"
-#endif
-
-#if SYSTEM_SUPPORT_IMU_BMP085  > 0u
-#include "imu_bmp085_driver.h"
-#endif
-
-#if SYSTEM_SUPPORT_IMU_HMC5883l  > 0u
-#include "imu_hmc5883l_driver.h"
-#endif
-
-#if SYSTEM_SUPPROT_FUSION_ARITHMETIC  > 0u
-#include "imu_top_arithmetic_model.h"
-#include "imu_arithmetic_kalman.h"
-#endif
-
-#endif    //#if SYSTEM_SUPPORT_IMU_I2C > 0u	
-
-#if SYSTEM_SUPPORT_IMU_GPS  > 0u
-#include "imu_gps_driver.h"
-#endif
-
-void IMU_Top_Init(void);    		//和IMU有关的模拟IIC接口  各传感器的初始化程序
-void IMU_Top_Call(void);    		//1ms调用一次   不断更新IMU数据
-
-#endif  //#ifndef __imu_top_H__
+#endif  //#ifndef IMU_TOP_H
 

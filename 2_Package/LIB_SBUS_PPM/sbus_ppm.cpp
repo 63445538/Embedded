@@ -20,7 +20,6 @@
 ***********************************************************************************************************************/
 
 #include "sbus_ppm.h"
-#include "robot_wheel_top.h"
 
 SBUS sbus ;
 PPM ppm ;
@@ -60,7 +59,7 @@ PPM ppm ;
 void SBUS::receiveByteAnl(unsigned char receive_byte)
 {
 
-    this_time_=GET_System_time();
+    this_time_ = HF_Get_System_Time();
     d_time_ = this_time_ - last_time_ ;
     last_time_ = this_time_ ;
     sbus_bufi_++;
@@ -73,7 +72,7 @@ void SBUS::receiveByteAnl(unsigned char receive_byte)
         if( sbus_bufi_ == 24 && ( sbus_rx_buffer_[0] == 0x0f ) )
         {
             sbus_mes_count_++;
-            sbus_frequency_=sbusFrequencyMeasure();   //Measure the sbus message's Frequency , about 100hz
+            sbus_frequency=sbusFrequencyMeasure();   //Measure the sbus message's Frequency , about 100hz
             sbus_rx_update = 1 ;                      //renew a sbus message and wait main func to use
             sbus_mes_i_++;
             if(sbus_mes_i_ >= 20)
@@ -122,25 +121,7 @@ void SBUS::sbusDataAnl(void)
     sbus_channel[7] = sbus_rx_buffer_[11] << 3 | sbus_rx_buffer_[10] >> 5;
     sbus_channel[15] = sbus_rx_buffer_[22] << 3 | sbus_rx_buffer_[21] >> 5;
     sbus_flag = sbus_rx_buffer_[23];
-    if ( sbus_flag == 0){
-        if( sbus_channel[5] >= 1000 )
-        {
-            my_robot.expect_robot_speed.x = (-(sbus_channel[1] - 992)*0.001);
-            my_robot.expect_robot_speed.y = (-(sbus_channel[0] - 992)*0.001);
-            my_robot.expect_robot_speed.z = (-(sbus_channel[3] - 992)*0.001)*3;
-            hf_link_node_pointer->receive_package_renew[SET_ROBOT_SPEED]=1;
-        }
-        else if( sbus_channel[5] <= 200 )
-        {
-            my_robot.expect_head1_state.pitch =(sbus_channel[1] - 992)*0.05;
-            my_robot.expect_head1_state.yaw = -(sbus_channel[0] - 992)*0.05;
-            hf_link_node_pointer->receive_package_renew[SET_HEAD_1]=1;
-        }
-        else
-        {
-
-        }
-    }
+    if( sbus_flag == 0 ) sbus_state = 1;    
 }
 
 /***********************************************************************************************************************
@@ -160,7 +141,7 @@ void SBUS::sbusDataAnl(void)
 ***********************************************************************************************************************/
 float SBUS::sbusFrequencyMeasure(void)
 {
-    this_time=GET_System_time();
+    this_time = HF_Get_System_Time();
     d_time_new = this_time - last_time ;
     last_time = this_time ;
     d_time = 0.9f*d_time+0.1f*d_time_new  ;   //Low pass filter

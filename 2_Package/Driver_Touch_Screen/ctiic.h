@@ -1,7 +1,7 @@
 #ifndef __MYCT_IIC_H
 #define __MYCT_IIC_H
 
-#include "BSP_TOP.h"	    
+#include "bsplib.h"	    
 
 //IO方向设置
 #define CT_SDA_IN()  {GPIOF->CRH&=0XFFFFFF0F;GPIOF->CRH|=8<<4;}

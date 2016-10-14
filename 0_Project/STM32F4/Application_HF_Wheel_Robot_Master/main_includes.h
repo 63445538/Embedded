@@ -18,42 +18,46 @@
 #define MAIN_INCLUDES_H
 
 /*******************************************************processor.h****************************************************/
-#include "BSP_TOP.h"
+#include "board.h"
+#include "main_config.h"
 
 /******************************************************package.h*******************************************************/
-#ifdef LIB_COMMON
+
+
+/******************************************************package.h*******************************************************/
+#ifdef PAKG_COMMON
 #include "queue.h"
 #endif
 
-#ifdef LIB_ROBOT_ABSTRACT
+#ifdef PAKG_ROBOT_ABSTRACT
 #include "robot_abstract.h"
 #endif
 
-#ifdef LIB_MATH
+#ifdef PAKG_MATH
 #include "base_math_top.h"
 #endif
 
-#ifdef DRIVER_IMU
+#ifdef PAKG_IMU
 #include "imu_top.h"
 #endif
 
-#ifdef DRIVER_MOTOR
+#ifdef PAKG_MOTOR
 #include "motor_top.h"
 #endif
 
-#ifdef DRIVER_SERVO
-#include "servo_top.h"
+#ifdef PAKG_SERVO
+#include "pan_tilt_head_ax.h"
 #endif
 
-#ifdef LIB_ROBOT_WHEEL
+#ifdef PACK_ROBOT_WHEEL
 #include "robot_wheel_top.h"
 #endif
 
-#ifdef LIB_HF_LINK
+#ifdef PACK_HF_LINK
 #include "hf_link.h"
 #endif
 
-#ifdef LIB_SBUS_PPM
+#ifdef PACK_SBUS_PPM
 #include "sbus_ppm.h"
 #endif
 /**********************************************************************************************************************/
@@ -73,7 +77,6 @@
 #endif
 
 /**********************************************************************************************************************/
-
 
 
 /*****************************************************API.h************************************************************/

@@ -10,18 +10,19 @@
       <TargetName>Application_HF_Wheel_Robot</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060061::V5.06 update 1 (build 61)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32F407VG</Device>
+          <Device>STM32F407VETx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.1.0.8</PackID>
+          <PackID>Keil.STM32F4xx_DFP.2.7.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
-          <Cpu>IROM(0x08000000,0x100000) IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IROM(0x08000000,0x80000) IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F407VG$Flash\STM32F4xx_1024.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_512 -FS08000000 -FL080000 -FP0($$Device:STM32F407VETx$CMSIS\Flash\STM32F4xx_512.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32F407VG$Device\Include\stm32f4xx.h</RegisterFile>
+          <RegisterFile>$$Device:STM32F407VETx$Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -31,7 +32,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:STM32F407VG$SVD\STM32F40x.svd</SFDFile>
+          <SFDFile>$$Device:STM32F407VETx$CMSIS\SVD\STM32F40x.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -84,6 +85,8 @@
             <UserProg2Name>D:\win7_software\Study_software\Keil_mdkv5\ARM\ARMCC\bin\fromelf.exe  --bin -o  Bin\APP.bin  Output\APP.axf</UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopA1X>0</nStopA1X>
+            <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>0</SelectedForBatchBuild>
           <SVCSIdString></SVCSIdString>
@@ -227,6 +230,7 @@
             <useUlib>0</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
+            <nSecure>0</nSecure>
             <RoSelD>3</RoSelD>
             <RwSelD>3</RwSelD>
             <CodeSel>0</CodeSel>
@@ -285,7 +289,7 @@
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x100000</Size>
+                <Size>0x80000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -310,7 +314,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x100000</Size>
+                <Size>0x80000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -347,7 +351,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>2</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -361,11 +365,15 @@
             <uSurpInc>0</uSurpInc>
             <uC99>0</uC99>
             <useXO>0</useXO>
+            <v6Lang>0</v6Lang>
+            <v6LangP>0</v6LangP>
+            <vShortEn>0</vShortEn>
+            <vShortWch>0</vShortWch>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>.\;..\..\..\1_Processor\STM32F4\Start_Code;..\..\..\1_Processor\STM32F4\Start_Code\CMSIS;..\..\..\1_Processor\STM32F4\Start_Code\FWlib\inc;..\..\..\1_Processor\STM32F4\BSP;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU\ARM-Cortex-M4\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\Ports\ARM-Cortex-M4\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Ports\ARM-Cortex-M4\Generic\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Source;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\UCOS-BSP;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-CONFIG;..\..\..\2_Package\LIB_Common;..\..\..\2_Package\LIB_Robot_Abstract;..\..\..\2_Package\LIB_Math;..\..\..\2_Package\Driver_IMU;..\..\..\2_Package\Driver_Motor;..\..\..\2_Package\Driver_Servo;..\..\..\2_Package\LIB_Robot_Wheel;..\..\..\2_Package\LIB_HF_Link;..\..\..\2_Package\LIB_Sbus_Ppm</IncludePath>
+              <IncludePath>.\;..\..\..\1_Processor\STM32F4\Start_Code;..\..\..\1_Processor\STM32F4\Start_Code\CMSIS;..\..\..\1_Processor\STM32F4\Start_Code\FWlib\inc;..\..\..\1_Processor\STM32F4\BSP;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU\ARM-Cortex-M4\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\Ports\ARM-Cortex-M4\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Ports\ARM-Cortex-M4\Generic\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Source;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\UCOS-BSP;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-CONFIG;..\..\..\2_Package\LIB_Common;..\..\..\2_Package\LIB_Robot_Abstract;..\..\..\2_Package\LIB_Math;..\..\..\2_Package\Driver_IMU;..\..\..\2_Package\Driver_Motor;..\..\..\2_Package\Driver_Servo;..\..\..\2_Package\LIB_Robot_Wheel;..\..\..\2_Package\LIB_HF_Link;..\..\..\2_Package\LIB_Sbus_Ppm;..\..\..\1_Processor\BoardAbstract;..\..\..\2_Package\Driver_HC-SR04;D:\Keil_v5\ARM\ARMCC\include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -609,16 +617,6 @@
           <GroupName>BSP</GroupName>
           <Files>
             <File>
-              <FileName>BSP_TOP.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\1_Processor\STM32F4\BSP\BSP_TOP.c</FilePath>
-            </File>
-            <File>
-              <FileName>BSP_TOP.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\1_Processor\STM32F4\BSP\BSP_TOP.h</FilePath>
-            </File>
-            <File>
               <FileName>nvic.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\1_Processor\STM32F4\BSP\nvic.c</FilePath>
@@ -803,6 +801,21 @@
               <FileType>2</FileType>
               <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU\ARM-Cortex-M4\RealView\cpu_a.asm</FilePath>
             </File>
+            <File>
+              <FileName>cpu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU\ARM-Cortex-M4\RealView\cpu.h</FilePath>
+            </File>
+            <File>
+              <FileName>cpu_core.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU\cpu_core.h</FilePath>
+            </File>
+            <File>
+              <FileName>cpu_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU\cpu_def.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -832,6 +845,31 @@
               <FileName>lib_mem_a.asm</FileName>
               <FileType>2</FileType>
               <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\Ports\ARM-Cortex-M4\RealView\lib_mem_a.asm</FilePath>
+            </File>
+            <File>
+              <FileName>lib_ascii.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\lib_ascii.h</FilePath>
+            </File>
+            <File>
+              <FileName>lib_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\lib_def.h</FilePath>
+            </File>
+            <File>
+              <FileName>lib_math.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\lib_math.h</FilePath>
+            </File>
+            <File>
+              <FileName>lib_mem.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\lib_mem.h</FilePath>
+            </File>
+            <File>
+              <FileName>lib_str.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\lib_str.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -927,6 +965,16 @@
               <FileName>os_var.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Source\os_var.c</FilePath>
+            </File>
+            <File>
+              <FileName>os.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Source\os.h</FilePath>
+            </File>
+            <File>
+              <FileName>os_type.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Source\os_type.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1104,44 +1152,54 @@
               <FilePath>..\..\..\2_Package\Driver_IMU\imu_arithmetic_kalman.h</FilePath>
             </File>
             <File>
-              <FileName>imu_gps_driver.cpp</FileName>
+              <FileName>bmp085.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\..\2_Package\Driver_IMU\imu_gps_driver.cpp</FilePath>
+              <FilePath>..\..\..\2_Package\Driver_IMU\bmp085.cpp</FilePath>
             </File>
             <File>
-              <FileName>imu_gps_driver.h</FileName>
+              <FileName>bmp085.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\2_Package\Driver_IMU\imu_gps_driver.h</FilePath>
+              <FilePath>..\..\..\2_Package\Driver_IMU\bmp085.h</FilePath>
             </File>
             <File>
-              <FileName>imu_bmp085_driver.cpp</FileName>
+              <FileName>gps.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\..\2_Package\Driver_IMU\imu_bmp085_driver.cpp</FilePath>
+              <FilePath>..\..\..\2_Package\Driver_IMU\gps.cpp</FilePath>
             </File>
             <File>
-              <FileName>imu_bmp085_driver.h</FileName>
+              <FileName>gps.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\2_Package\Driver_IMU\imu_bmp085_driver.h</FilePath>
+              <FilePath>..\..\..\2_Package\Driver_IMU\gps.h</FilePath>
             </File>
             <File>
-              <FileName>imu_hmc5883l_driver.cpp</FileName>
+              <FileName>hmc5883l.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\..\2_Package\Driver_IMU\imu_hmc5883l_driver.cpp</FilePath>
+              <FilePath>..\..\..\2_Package\Driver_IMU\hmc5883l.cpp</FilePath>
             </File>
             <File>
-              <FileName>imu_hmc5883l_driver.h</FileName>
+              <FileName>hmc5883l.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\2_Package\Driver_IMU\imu_hmc5883l_driver.h</FilePath>
+              <FilePath>..\..\..\2_Package\Driver_IMU\hmc5883l.h</FilePath>
             </File>
             <File>
-              <FileName>imu_mpu6050_driver.cpp</FileName>
+              <FileName>mpu6050.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\..\2_Package\Driver_IMU\imu_mpu6050_driver.cpp</FilePath>
+              <FilePath>..\..\..\2_Package\Driver_IMU\mpu6050.cpp</FilePath>
             </File>
             <File>
-              <FileName>imu_mpu6050_driver.h</FileName>
+              <FileName>mpu6050.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\2_Package\Driver_IMU\imu_mpu6050_driver.h</FilePath>
+              <FilePath>..\..\..\2_Package\Driver_IMU\mpu6050.h</FilePath>
+            </File>
+            <File>
+              <FileName>ms611.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\2_Package\Driver_IMU\ms611.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>ms611.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\2_Package\Driver_IMU\ms611.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1184,16 +1242,6 @@
               <FilePath>..\..\..\2_Package\Driver_Servo\servo_config.h</FilePath>
             </File>
             <File>
-              <FileName>servo_top.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\2_Package\Driver_Servo\servo_top.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>servo_top.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\2_Package\Driver_Servo\servo_top.h</FilePath>
-            </File>
-            <File>
               <FileName>servo_digital.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\2_Package\Driver_Servo\servo_digital.cpp</FilePath>
@@ -1202,6 +1250,16 @@
               <FileName>servo_digital.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\2_Package\Driver_Servo\servo_digital.h</FilePath>
+            </File>
+            <File>
+              <FileName>pan_tilt_head_ax.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\2_Package\Driver_Servo\pan_tilt_head_ax.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>pan_tilt_head_ax.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\2_Package\Driver_Servo\pan_tilt_head_ax.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1297,6 +1355,46 @@
               <FileName>sbus_ppm.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\2_Package\LIB_SBUS_PPM\sbus_ppm.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Board/Abstract</GroupName>
+          <Files>
+            <File>
+              <FileName>board.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\1_Processor\BoardAbstract\board.h</FilePath>
+            </File>
+            <File>
+              <FileName>control_unit_v1.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\1_Processor\BoardAbstract\control_unit_v1.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>control_unit_v2.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\1_Processor\BoardAbstract\control_unit_v2.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Package/HC-SR04</GroupName>
+          <Files>
+            <File>
+              <FileName>HC-SR04.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\2_Package\Driver_HC-SR04\HC-SR04.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>HC-SR04.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\2_Package\Driver_HC-SR04\HC-SR04.h</FilePath>
+            </File>
+            <File>
+              <FileName>HC-SR04_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\2_Package\Driver_HC-SR04\HC-SR04_config.h</FilePath>
             </File>
           </Files>
         </Group>

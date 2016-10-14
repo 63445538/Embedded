@@ -19,28 +19,8 @@
 #define ROBOT_WHEEL_CONFIG_H
 
 #include "main_config.h"
-#include "BSP_TOP.h"
-
-#ifndef LIB_ROBOT_WHEEL
-#error "!!! the LIB_ROBOT_WHEEL package must dependent on DRIVER_MOTOR package at least"
-#endif
-
-#ifdef  DRIVER_SERVO
-#include "servo_top.h"
-#endif
-
-#ifdef DRIVER_MOTOR
-#include "motor_top.h"
-#endif
-
-#ifdef DRIVER_IMU
-#define  COORD_CALC_IMU_EN  0    ////use the IMU data to calculating coordinates
-#include "imu_top.h"
-#endif
-
+#include "board.h"
 #include "robot_abstract.h"
-
-#define  PI_   3.141592653f
 
 #endif    // #ifndef ROBOT_WHEEL_CONFIG_H
 

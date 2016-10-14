@@ -6,21 +6,15 @@ extern "C" {
 #endif 
 
 #include "stm32f4xx.h"
-
-/*TIM2 CHI1 CHI2---PA0 PA1  TIM3 CHI1 CHI2---PA6 PA7||TIM3 CHI1 CHI2---PB4 PB5 TIM4 CHI1 CHI2---PB6 PB7 */
-void HF_Encoder_Init(TIM_TypeDef* TIMx, unsigned char GPIO_AF);       //Initialize encoder mode, input parameter TIM1 TIM2 TIM3
-
-typedef struct ENCODER_Data{
-    float TIM2_Count;         //current pulse number, Negative or positive mean different direction
-    float TIM3_Count;         //current pulse number, Negative or positive mean different direction
-    float TIM4_Count;         //current pulse number, Negative or positive mean different direction
-}ENCODER_Data;
-
-float Get_Encoder_CNT_TIM2(void);
-float Get_Encoder_CNT_TIM3(void);
-float Get_Encoder_CNT_TIM4(void);
-
-extern ENCODER_Data encoder_data_r;
+	
+// TIM2 CHI1 CHI2---PA0 PA1 || PA15 PB3     TIM3 CHI1 CHI2---PA6 PA7 || PB4 PB5
+// TIM4 CHI1 CHI2---PB6 PB7 || PD12 PD13    TIM5 CHI1 CHI2---PA0 PA1
+//Initialize encoder mode, input parameter TIM2 TIM3 TIM4 TIM5
+void HF_Encoder_Init(TIM_TypeDef* TIMx, uint8_t GPIO_AF);
+float HF_Get_Encode_TIM2(void);
+float HF_Get_Encode_TIM3(void);
+float HF_Get_Encode_TIM4(void);
+float HF_Get_Encode_TIM5(void);
 
 #ifdef __cplusplus
 }

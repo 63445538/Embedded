@@ -10,11 +10,12 @@
       <TargetName>Template_UCOSIII</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060061::V5.06 update 1 (build 61)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F407VG</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.1.0.8</PackID>
+          <PackID>Keil.STM32F4xx_DFP.2.7.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IROM(0x08000000,0x100000) IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -84,6 +85,8 @@
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopA1X>0</nStopA1X>
+            <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>0</SelectedForBatchBuild>
           <SVCSIdString></SVCSIdString>
@@ -227,6 +230,7 @@
             <useUlib>0</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
+            <nSecure>0</nSecure>
             <RoSelD>3</RoSelD>
             <RwSelD>3</RwSelD>
             <CodeSel>0</CodeSel>
@@ -361,11 +365,15 @@
             <uSurpInc>0</uSurpInc>
             <uC99>0</uC99>
             <useXO>0</useXO>
+            <v6Lang>0</v6Lang>
+            <v6LangP>0</v6LangP>
+            <vShortEn>0</vShortEn>
+            <vShortWch>0</vShortWch>
             <VariousControls>
-              <MiscControls></MiscControls>
-              <Define></Define>
+              <MiscControls>--cpp</MiscControls>
+              <Define>STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>.\;..\..\..\1_Processor\STM32F4\Start_Code;..\..\..\1_Processor\STM32F4\Start_Code\CMSIS;..\..\..\1_Processor\STM32F4\Start_Code\FWlib\inc;..\..\..\1_Processor\STM32F4\BSP;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU\ARM-Cortex-M4\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\Ports\ARM-Cortex-M4\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Ports\ARM-Cortex-M4\Generic\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Source;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\UCOS-BSP;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-CONFIG</IncludePath>
+              <IncludePath>.\;..\..\..\1_Processor\STM32F4\Start_Code;..\..\..\1_Processor\STM32F4\Start_Code\CMSIS;..\..\..\1_Processor\STM32F4\Start_Code\FWlib\inc;..\..\..\1_Processor\STM32F4\BSP;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-CPU\ARM-Cortex-M4\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uC-LIB\Ports\ARM-Cortex-M4\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Ports\ARM-Cortex-M4\Generic\RealView;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-III\Source;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\UCOS-BSP;..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-CONFIG;..\..\..\1_Processor\BoardAbstract</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -608,16 +616,6 @@
         <Group>
           <GroupName>BSP</GroupName>
           <Files>
-            <File>
-              <FileName>BSP_TOP.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\1_Processor\STM32F4\BSP\BSP_TOP.c</FilePath>
-            </File>
-            <File>
-              <FileName>BSP_TOP.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\1_Processor\STM32F4\BSP\BSP_TOP.h</FilePath>
-            </File>
             <File>
               <FileName>nvic.c</FileName>
               <FileType>1</FileType>
@@ -992,6 +990,26 @@
               <FileName>os_cfg_app.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\3_OS\STM32F4\RTOS\uCOS-III\uCOS-CONFIG\os_cfg_app.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Board/Abstract</GroupName>
+          <Files>
+            <File>
+              <FileName>board.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\1_Processor\BoardAbstract\board.h</FilePath>
+            </File>
+            <File>
+              <FileName>control_unit_v1.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\1_Processor\BoardAbstract\control_unit_v1.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>control_unit_v2.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\1_Processor\BoardAbstract\control_unit_v2.cpp</FilePath>
             </File>
           </Files>
         </Group>

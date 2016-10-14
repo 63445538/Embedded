@@ -23,7 +23,7 @@ extern "C" {
 #include "flash.h"
 
 /***********************************************************************************************************************
-* Function:     u32 STMFLASH_ReadWord(u32 faddr)
+* Function:     uint32_t HF_Flash_ReadWord(uint32_t faddr)
 *
 * Scope: 
 *
@@ -37,13 +37,13 @@ extern "C" {
 *
 * History:
 ***********************************************************************************************************************/
-u32 STMFLASH_ReadWord(u32 faddr)
+uint32_t HF_Flash_ReadWord(uint32_t faddr)
 {
-    return *(vu32*)faddr;
+   return *(vu32*)faddr;
 }  
 
 /***********************************************************************************************************************
-* Function:     uint16_t STMFLASH_GetFlashSector(u32 addr) 
+* Function:     uint16_t HF_Flash_GetFlashSector(uint32_t addr)
 *
 * Scope:   
 *
@@ -57,7 +57,7 @@ u32 STMFLASH_ReadWord(u32 faddr)
 *
 * History:
 ***********************************************************************************************************************/
-uint16_t STMFLASH_GetFlashSector(u32 addr)
+uint16_t HF_Flash_GetFlashSector(uint32_t addr)
 {
     if(addr<ADDR_FLASH_SECTOR_1)return FLASH_Sector_0;
     else if(addr<ADDR_FLASH_SECTOR_2)return FLASH_Sector_1;
@@ -74,7 +74,7 @@ uint16_t STMFLASH_GetFlashSector(u32 addr)
 }
 
 /***********************************************************************************************************************
-* Function:     void STMFLASH_Write(u32 WriteAddr,u32 *pBuffer,u32 NumToWrite)
+* Function:     void HF_Flash_Write(uint32_t WriteAddr,uint32_t *pBuffer,uint32_t NumToWrite)
 *
 * Scope: 
 *
@@ -88,24 +88,24 @@ uint16_t STMFLASH_GetFlashSector(u32 addr)
 *
 * History:
 ***********************************************************************************************************************/
-void STMFLASH_Write(u32 WriteAddr,u32 *pBuffer,u32 NumToWrite)	
+void HF_Flash_Write(uint32_t WriteAddr,uint32_t *pBuffer,uint32_t NumToWrite)
 { 
     FLASH_Status status = FLASH_COMPLETE;
-    u32 addrx=0;
-    u32 endaddr=0;
-    if(WriteAddr<STM32_FLASH_BASE||WriteAddr%4)return;	//Illegal address
-    FLASH_Unlock();									    //unlock
+    uint32_t addrx=0;
+    uint32_t endaddr=0;
+    if(WriteAddr<STM32_FLASH_BASE||WriteAddr%4)return; //Illegal address
+    FLASH_Unlock();             //unlock
     FLASH_DataCacheCmd(DISABLE);//must disable data cache while FLASH erasing
     
-    addrx=WriteAddr;				//start address to write
+    addrx=WriteAddr;        //start address to write
     endaddr=WriteAddr+NumToWrite*4;	//end address to write
-    if(addrx<0X1FFF0000)			//only master store area need be erased
+    if(addrx<0X1FFF0000)    //only master store area need be erased
     {
-        while(addrx<endaddr)		//erase all
+        while(addrx<endaddr)  //erase all
         {
-            if(STMFLASH_ReadWord(addrx)!=0XFFFFFFFF)//if not is 0XFFFFFFFF, need to be erased
+            if(HF_Flash_ReadWord(addrx)!=0XFFFFFFFF)//if not is 0XFFFFFFFF, need to be erased
             {
-                status=FLASH_EraseSector(STMFLASH_GetFlashSector(addrx),VoltageRange_3);//VCC=2.7~3.6V之间!!
+                status=FLASH_EraseSector(HF_Flash_GetFlashSector(addrx),VoltageRange_3);//VCC=2.7~3.6V之间!!
                 if(status!=FLASH_COMPLETE)break;	//have error
             }else addrx+=4;
         }
@@ -116,18 +116,18 @@ void STMFLASH_Write(u32 WriteAddr,u32 *pBuffer,u32 NumToWrite)
         {
             if(FLASH_ProgramWord(WriteAddr,*pBuffer)!=FLASH_COMPLETE)//writing data
             {
-                break;	       //error to writing
+                break;          //error to writing
             }
             WriteAddr+=4;
             pBuffer++;
         }
     }
-    FLASH_DataCacheCmd(ENABLE);	//finish FLASH eraseing, enable data cache
-    FLASH_Lock();//lock
+    FLASH_DataCacheCmd(ENABLE); //finish FLASH eraseing, enable data cache
+    FLASH_Lock(); //lock
 } 
 
 /***********************************************************************************************************************
-* Function:     void STMFLASH_Read(u32 ReadAddr,u32 *pBuffer,u32 NumToRead) 
+* Function:     void HF_Flash_Read(uint32_t ReadAddr,uint32_t *pBuffer,uint32_t NumToRead)
 *
 * Scope:   
 *
@@ -141,12 +141,12 @@ void STMFLASH_Write(u32 WriteAddr,u32 *pBuffer,u32 NumToWrite)
 *
 * History:
 ***********************************************************************************************************************/
-void STMFLASH_Read(u32 ReadAddr,u32 *pBuffer,u32 NumToRead)   	
+void HF_Flash_Read(uint32_t ReadAddr,uint32_t *pBuffer,uint32_t NumToRead)
 {
-    u32 i;
+    uint32_t i;
     for(i=0;i<NumToRead;i++)
     {
-        pBuffer[i]=STMFLASH_ReadWord(ReadAddr);//read 4 bytes
+        pBuffer[i]=HF_Flash_ReadWord(ReadAddr);//read 4 bytes
         ReadAddr+=4;//offset 4 bytes
     }
 }

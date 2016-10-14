@@ -1,7 +1,7 @@
 #ifndef __fsmc_lcd_driver_H
 #define __fsmc_lcd_driver_H		
 
-#include "BSP_TOP.h"	 
+#include "bsplib.h"	 
 //LCD重要参数集
 typedef struct  
 {										    

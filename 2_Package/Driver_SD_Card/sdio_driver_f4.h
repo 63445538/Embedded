@@ -23,7 +23,7 @@
 #ifndef __sdio_driver_f4_H
 #define __sdio_driver_f4_H
 
-#include "BSP_TOP.h"
+#include "bsplib.h"
 #include "string.h"	 
 
 //SDIO相关标志位,拷贝自:stm32f4xx_sdio.h

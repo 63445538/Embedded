@@ -44,7 +44,6 @@ extern "C" {
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_IWDG_Init(void) 
 {	
@@ -69,7 +68,6 @@ void HF_IWDG_Init(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_IWDG_Feed(void)
 {   
@@ -96,14 +94,13 @@ void HF_IWDG_Feed(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 static void WWDG_NVIC_Init()
 {
     NVIC_InitTypeDef NVIC_InitStructure;
-    NVIC_InitStructure.NVIC_IRQChannel = WWDG_IRQn;    //WWDG interrupt
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;   ////PreemptionPriority
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;	 //SubPriority
+    NVIC_InitStructure.NVIC_IRQChannel = WWDG_IRQn;             //WWDG interrupt
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;   //PreemptionPriority
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;	        //SubPriority
     NVIC_Init(&NVIC_InitStructure);//NVIC initialize
 }
 
@@ -122,14 +119,13 @@ u8 WWDG_CNT=0x7f;
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_WWDG_Init(u8 tr,u8 wr,u32 fprer)
 { 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_WWDG, ENABLE);  //   enable  WWDG clock
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_WWDG, ENABLE);   //enable WWDG clock
     WWDG_SetPrescaler(fprer);   //set IWDG Prescaler
     WWDG_SetWindowValue(wr);    //set window value
-    WWDG_Enable(tr);	          //enable WWDG, and set counter
+    WWDG_Enable(tr);	        //enable WWDG, and set counter
     WWDG_ClearFlag();
     WWDG_NVIC_Init();           //initialize WWDG NVIC
     WWDG_EnableIT();            //enable interrupt of WWDG
@@ -149,7 +145,6 @@ void HF_WWDG_Init(u8 tr,u8 wr,u32 fprer)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_WWDG_Set_Counter(u8 cnt)
 {
@@ -170,7 +165,6 @@ void HF_WWDG_Set_Counter(u8 cnt)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_WWDG_IRQHandler(void)
 {
@@ -201,7 +195,6 @@ void HF_WWDG_IRQHandler(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 static void Sys_Enter_Standby(void)
 {		
@@ -210,7 +203,6 @@ static void Sys_Enter_Standby(void)
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);//enable PWR clock
     PWR_BackupAccessCmd(ENABLE);//enable access to backup register
     
-    //这里我们就直接关闭相关RTC中断
     RTC_ITConfig(RTC_IT_TS|RTC_IT_WUT|RTC_IT_ALRB|RTC_IT_ALRA,DISABLE);//disable RTC interrupt
     RTC_ClearITPendingBit(RTC_IT_TS|RTC_IT_WUT|RTC_IT_ALRB|RTC_IT_ALRA);//clear RTC interrupt flag
     
@@ -233,7 +225,6 @@ static void Sys_Enter_Standby(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 uint8_t Check_WKUP(void) 
 {
@@ -276,7 +267,6 @@ uint8_t Check_WKUP(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 //void EXTI0_IRQHandler(void)
 //{ 		    		    				     		    
@@ -301,7 +291,6 @@ uint8_t Check_WKUP(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_WKUP_Init(void)
 {	  
@@ -325,17 +314,17 @@ void HF_WKUP_Init(void)
         Sys_Enter_Standby();	//not power-on, enter standby
     }
     SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0);//PA0 connect to interrupt line0
-    EXTI_InitStructure.EXTI_Line = EXTI_Line0;//LINE0
-    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;//interrupt event
+    EXTI_InitStructure.EXTI_Line = EXTI_Line0; //LINE0
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt; //interrupt event
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising; //touch off rising
-    EXTI_InitStructure.EXTI_LineCmd = ENABLE;//enable interrupt LINE0
-    EXTI_Init(&EXTI_InitStructure);//config
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE; //enable interrupt LINE0
+    EXTI_Init(&EXTI_InitStructure); //config
     
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;//external interrupt 0
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn; //external interrupt 0
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x02; //enable external interrupt channel
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;//
-    NVIC_Init(&NVIC_InitStructure);//config NVIC
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure); //config NVIC
 }
 
 #ifdef __cplusplus

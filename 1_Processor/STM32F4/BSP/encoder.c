@@ -14,7 +14,7 @@
 *
 * Description: 
 *       STM32F4--------------
-*       occupy hardware source : timer2 timer3 timer4
+*       occupy hardware source : timer2 timer3 timer4 timer5
 ***********************************************************************************************************************/
 
 #ifdef __cplusplus
@@ -24,16 +24,12 @@ extern "C" {
 #include "encoder.h"
 #include "nvic.h"
 
-ENCODER_Data encoder_data_r;
-
-#define Encoder_IRQ_MDE_EN   0
-
 /***********************************************************************************************************************
-* Function:      void HF_Encoder_Init(TIM_TypeDef* TIMx)
+* Function:     void HF_Encoder_Init(TIM_TypeDef* TIMx , uint8_t GPIO_AF)
 *
-* Scope:         public
+* Scope:        public
 *
-* Description:   Initialize encoder mode, input parameter  TIM2 TIM3 TIM4
+* Description:  Initialize encoder mode, input parameter  TIM2 TIM3 TIM4
 *
 * Arguments:
 *
@@ -43,11 +39,11 @@ ENCODER_Data encoder_data_r;
 *
 * History:
 ***********************************************************************************************************************/
-void HF_Encoder_Init(TIM_TypeDef* TIMx , unsigned char GPIO_AF)	
+void HF_Encoder_Init(TIM_TypeDef* TIMx , uint8_t GPIO_AF)	
 {
     
     TIM_ICInitTypeDef TIM_ICInitStructure;
-    TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+    //TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_StructInit(&GPIO_InitStructure);
 
@@ -69,11 +65,16 @@ void HF_Encoder_Init(TIM_TypeDef* TIMx , unsigned char GPIO_AF)
             GPIO_Init(GPIOA, &GPIO_InitStructure);
         }
         else if(GPIO_AF == 1){
-            
+            //---------------------------------------------------------------TIM2 CHI1 CHI2---PA15 PB3;
+            RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA , ENABLE);
+            RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB , ENABLE);
+            GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
+            GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_TIM2);
+            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+            GPIO_Init(GPIOA, &GPIO_InitStructure);
+            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+            GPIO_Init(GPIOB, &GPIO_InitStructure);
         }
-#if Encoder_IRQ_MDE_EN==1
-        TIM2_NVIC_Configuration();    //enable interrupt
-#endif
     }
     
     if( TIMx == TIM3){
@@ -104,9 +105,6 @@ void HF_Encoder_Init(TIM_TypeDef* TIMx , unsigned char GPIO_AF)
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
             GPIO_Init(GPIOC, &GPIO_InitStructure);
         }
-#if Encoder_IRQ_MDE_EN == 1
-        TIM3_NVIC_Configuration();
-#endif
     }
     
     if( TIMx == TIM4){
@@ -129,128 +127,62 @@ void HF_Encoder_Init(TIM_TypeDef* TIMx , unsigned char GPIO_AF)
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13;
             GPIO_Init(GPIOD, &GPIO_InitStructure);
         }
-#if Encoder_IRQ_MDE_EN == 1
-        TIM4_NVIC_Configuration();
-#endif
     }
 
-#if Encoder_IRQ_MDE_EN == 1
-    //TIM_DeInit(TIMx);
-    TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-    TIM_TimeBaseStructure.TIM_Prescaler = 0x0;
-    TIM_TimeBaseStructure.TIM_Period = 4-1 ;
-    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM_TimeBaseInit(TIMx, &TIM_TimeBaseStructure);
-    TIM_EncoderInterfaceConfig(TIMx, TIM_EncoderMode_TI12,TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
-    TIM_ICStructInit(&TIM_ICInitStructure);
-    TIM_ICInitStructure.TIM_ICFilter = 0;
-    TIM_ICInit(TIMx, &TIM_ICInitStructure);
-    TIM_ClearFlag(TIMx, TIM_FLAG_Update);
-    TIM_ITConfig(TIMx, TIM_IT_Update, ENABLE);
-    TIM_Cmd(TIMx, ENABLE);
-#endif		
+    if( TIMx == TIM5){
 
-#if Encoder_IRQ_MDE_EN == 0
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5 , ENABLE);
+
+        if(GPIO_AF == 0){
+            //---------------------------------------------------------------TIM5 CHI1 CHI2---PA0 PA1;
+            RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA , ENABLE);
+            GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM5);
+            GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM5);
+            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+            GPIO_Init(GPIOA, &GPIO_InitStructure);
+        }
+    }
+
     TIM_EncoderInterfaceConfig(TIMx, TIM_EncoderMode_TI12,TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
     TIM_ICStructInit(&TIM_ICInitStructure);
     TIM_ICInitStructure.TIM_ICFilter = 1;
     TIM_ICInit(TIMx, &TIM_ICInitStructure);
     TIM_Cmd(TIMx, ENABLE);
     TIMx->CNT = 0x7fff;
-#endif
-    encoder_data_r.TIM2_Count =0;
-    encoder_data_r.TIM3_Count =0;
-    encoder_data_r.TIM4_Count =0;
+
 }
 
-/************************************************************************************************************************
-***                                                                                                                   ***
-***                                          Interrupt Function                                                       ***
-***                                                                                                                   ***
-*************************************************************************************************************************/
-
-float Get_Encoder_CNT_TIM2(void)
+float HF_Get_Encode_TIM2(void)
 {
     float cnt;
-#if Encoder_IRQ_MDE_EN == 1
-    cnt=encoder_data_r.TIM2_Count;
-    encoder_data_r.TIM2_Count=0;
-#endif
-#if Encoder_IRQ_MDE_EN == 0
-    encoder_data_r.TIM2_Count  = (float)((unsigned short int)0x7fff) - (float)((unsigned short int)(TIM2->CNT)) ;  //! (float) is must
-    cnt=encoder_data_r.TIM2_Count;
+    cnt  = (float)((uint16_t)0x7fff) - (float)((uint16_t)(TIM2->CNT)) ;  //! (float) is must
     TIM2->CNT = 0x7fff;
-#endif
     return cnt;
 }
 
-float Get_Encoder_CNT_TIM3(void)
+float HF_Get_Encode_TIM3(void)
 {
     float cnt;
-#if Encoder_IRQ_MDE_EN == 1
-    cnt=encoder_data_r.TIM3_Count;
-    encoder_data_r.TIM3_Count=0;
-#endif
-#if Encoder_IRQ_MDE_EN == 0
-    encoder_data_r.TIM3_Count  = (float)((unsigned short int)0x7fff) - (float)((unsigned short int)(TIM3->CNT)) ;
-    cnt=encoder_data_r.TIM3_Count;
+    cnt  = (float)((uint16_t)0x7fff) - (float)((uint16_t)(TIM3->CNT)) ;
     TIM3->CNT = 0x7fff;
-#endif
     return cnt;
 }
 
-float Get_Encoder_CNT_TIM4(void)
+float HF_Get_Encode_TIM4(void)
 {
     float cnt;
-#if Encoder_IRQ_MDE_EN == 1
-    cnt=encoder_data_r.TIM4_Count;
-    encoder_data_r.TIM4_Count=0;
-#endif
-#if Encoder_IRQ_MDE_EN == 0
-    encoder_data_r.TIM4_Count  = (float)((unsigned short int)0x7fff) - (float)((unsigned short int)(TIM4->CNT)) ;
-    cnt=encoder_data_r.TIM4_Count;
+    cnt  = (float)((uint16_t)0x7fff) - (float)((uint16_t)(TIM4->CNT)) ;
     TIM4->CNT = 0x7fff;
-#endif
     return cnt;
 }
 
-#if Encoder_IRQ_MDE_EN == 1
-
-void TIM2_IRQHandler(void)	                         
-{ 
-    if( TIM_GetCounter(TIM2) == 0 ){
-        encoder_data_r.TIM2_Count--;
-    }
-    else{
-        encoder_data_r.TIM2_Count++;
-    }
-    TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);     // clear interrupt flag
+float HF_Get_Encode_TIM5(void)
+{
+    float cnt;
+    cnt  = (float)((uint16_t)0x7fff) - (float)((uint16_t)(TIM5->CNT)) ;
+    TIM5->CNT = 0x7fff;
+    return cnt;
 }
-
-void TIM3_IRQHandler(void)	                          
-{ 
-    if( TIM_GetCounter(TIM3) == 0 ){
-        encoder_data_r.TIM3_Count--;
-    }
-    else{
-        encoder_data_r.TIM3_Count++;
-    }
-    TIM_ClearITPendingBit(TIM3 , TIM_FLAG_Update);     // clear interrupt flag
-}
-
-void TIM4_IRQHandler(void)	                          
-{ 
-    if( TIM_GetCounter(TIM4) == 0 ){
-        encoder_data_r.TIM4_Count--;
-    }
-    else{
-        encoder_data_r.TIM4_Count++;
-    }
-    TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);     // clear interrupt flag
-}
-
-#endif
 
 #ifdef __cplusplus
 }
